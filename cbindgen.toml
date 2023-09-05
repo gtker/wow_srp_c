@@ -1,6 +1,6 @@
 [defines]
-"feature = vanilla" = "WOW_SRP_VANILLA_HEADER"
-"feature = tbc" = "WOW_SRP_TBC_HEADER"
-"feature = wrath" = "WOW_SRP_WRATH_HEADER"
+"feature = vanilla_header" = "WOW_SRP_VANILLA_HEADER"
+"feature = tbc_header" = "WOW_SRP_TBC_HEADER"
+"feature = wrath_header" = "WOW_SRP_WRATH_HEADER"
 "feature = client" = "WOW_SRP_CLIENT"
 "feature = server" = "WOW_SRP_SERVER"

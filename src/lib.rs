@@ -1,11 +1,13 @@
 #[cfg(feature = "client")]
-mod client;
-mod header_crypto;
+pub mod client;
+pub mod header_crypto;
 #[cfg(feature = "server")]
-mod server;
+pub mod server;
 mod util;
 
 pub use values::*;
+
+pub const CLIENT_HEADER_LENGTH: u8 = 6;
 
 #[cfg(any(feature = "client", feature = "server"))]
 mod values {
@@ -16,8 +18,6 @@ mod values {
     ///
     /// This must be provided to clients in order for them to use it.
     pub const WOW_SRP_GENERATOR: u8 = 7;
-
-    pub const CLIENT_HEADER_LENGTH: u8 = 6;
 
     /// Large safe prime used by the server implementation.
     ///

@@ -4,15 +4,29 @@
 #include <ostream>
 #include <new>
 
+constexpr static const uint8_t CLIENT_HEADER_LENGTH = 6;
+
+#if defined(WOW_SRP_TBC_HEADER)
+constexpr static const uint8_t TBC_SERVER_HEADER_LENGTH = 4;
+#endif
+
+#if defined(WOW_SRP_VANILLA_HEADER)
+constexpr static const uint8_t VANILLA_SERVER_HEADER_LENGTH = 4;
+#endif
+
+#if defined(WOW_SRP_WRATH_HEADER)
+constexpr static const uint8_t WRATH_SERVER_HEADER_MINIMUM_LENGTH = 4;
+#endif
+
+#if defined(WOW_SRP_WRATH_HEADER)
+constexpr static const uint8_t WRATH_SERVER_HEADER_MAXIMUM_LENGTH = 5;
+#endif
+
 #if (defined(WOW_SRP_CLIENT) || defined(WOW_SRP_SERVER))
 /// Generator used by the server implementation.
 ///
 /// This must be provided to clients in order for them to use it.
 constexpr static const uint8_t WOW_SRP_GENERATOR = 7;
-#endif
-
-#if (defined(WOW_SRP_CLIENT) || defined(WOW_SRP_SERVER))
-constexpr static const uint8_t CLIENT_HEADER_LENGTH = 6;
 #endif
 
 #if (defined(WOW_SRP_CLIENT) || defined(WOW_SRP_SERVER))

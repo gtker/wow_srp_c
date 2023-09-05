@@ -8,6 +8,8 @@ use std::ffi::c_char;
 use wow_srp::tbc_header::HeaderCrypto as HeaderCryptoInner;
 use wow_srp::tbc_header::ProofSeed as ProofSeedInner;
 
+pub const TBC_SERVER_HEADER_LENGTH: u8 = 4;
+
 pub struct WowSrpTbcProofSeed(ProofSeedInner);
 
 #[no_mangle]

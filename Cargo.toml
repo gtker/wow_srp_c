@@ -8,10 +8,10 @@ name = "wow_srp"
 crate-type = ["cdylib", "staticlib"]
 
 [features]
-default = ["vanilla", "tbc", "wrath", "client", "server"]
-vanilla = []
-tbc = []
-wrath = []
+default = ["vanilla_header", "tbc_header", "wrath_header", "client", "server"]
+vanilla_header = []
+tbc_header = []
+wrath_header = []
 client = []
 server = []
 

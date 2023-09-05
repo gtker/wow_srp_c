@@ -11,6 +11,9 @@ use wow_srp::wrath_header::ServerCrypto as ServerCryptoInner;
 
 pub struct WowSrpWrathProofSeed(ProofSeedInner);
 
+pub const WRATH_SERVER_HEADER_MINIMUM_LENGTH: u8 = 4;
+pub const WRATH_SERVER_HEADER_MAXIMUM_LENGTH: u8 = 5;
+
 #[no_mangle]
 pub extern "C" fn wow_srp_wrath_proof_seed_free(seed: *mut WowSrpWrathProofSeed) {
     free_box_ptr(seed)

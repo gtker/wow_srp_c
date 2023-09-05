@@ -3,6 +3,24 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define CLIENT_HEADER_LENGTH 6
+
+#if defined(WOW_SRP_TBC_HEADER)
+#define TBC_SERVER_HEADER_LENGTH 4
+#endif
+
+#if defined(WOW_SRP_VANILLA_HEADER)
+#define VANILLA_SERVER_HEADER_LENGTH 4
+#endif
+
+#if defined(WOW_SRP_WRATH_HEADER)
+#define WRATH_SERVER_HEADER_MINIMUM_LENGTH 4
+#endif
+
+#if defined(WOW_SRP_WRATH_HEADER)
+#define WRATH_SERVER_HEADER_MAXIMUM_LENGTH 5
+#endif
+
 #if (defined(WOW_SRP_CLIENT) || defined(WOW_SRP_SERVER))
 /**
  * Generator used by the server implementation.
@@ -10,10 +28,6 @@
  * This must be provided to clients in order for them to use it.
  */
 #define WOW_SRP_GENERATOR 7
-#endif
-
-#if (defined(WOW_SRP_CLIENT) || defined(WOW_SRP_SERVER))
-#define CLIENT_HEADER_LENGTH 6
 #endif
 
 #if (defined(WOW_SRP_CLIENT) || defined(WOW_SRP_SERVER))

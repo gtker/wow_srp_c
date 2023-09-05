@@ -8,6 +8,8 @@ use std::ffi::c_char;
 use wow_srp::vanilla_header::HeaderCrypto as HeaderCryptoInner;
 use wow_srp::vanilla_header::ProofSeed as ProofSeedInner;
 
+pub const VANILLA_SERVER_HEADER_LENGTH: u8 = 4;
+
 pub struct WowSrpVanillaProofSeed(ProofSeedInner);
 
 #[no_mangle]
