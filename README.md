@@ -77,3 +77,21 @@ Save the session key for header decryption.
 
 # Header Decryption
 
+The general flow for both is:
+```text
+WowSrpVanillaProofSeed -> WowSrpVanillaHeaderCrypto
+```
+
+Create the `WowSrpVanillaProofSeed` using `wow_srp_vanilla_proof_seed_new`.
+Get the proof seed with `wow_srp_vanilla_prood_seed` and send it to the opposite party.
+
+## Server
+
+Create a `WowSrpVanillaHeaderCrypto` using `wow_srp_vanilla_proof_seed_into_server_header_crypto`.
+Then encrypt with `wow_srp_vanilla_header_crypto_encrypt` and decrypt with `wow_srp_vanilla_header_crypto_decrypt`.
+
+## Client
+
+Create a `WowSrpVanillaHeaderCrypto` using `wow_srp_vanilla_proof_seed_into_client_header_crypto`.
+Then encrypt with `wow_srp_vanilla_header_crypto_encrypt` and decrypt with `wow_srp_vanilla_header_crypto_decrypt`.
+
