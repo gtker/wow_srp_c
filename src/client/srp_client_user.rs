@@ -1,10 +1,26 @@
 use crate::client::srp_client_challenge::WowSrpClientChallenge;
-use crate::util::{char_ptr_to_string, read_array, read_public_key, retake_ownership};
+use crate::util::{
+    char_ptr_to_string, free_box_ptr, read_array, read_public_key, retake_ownership,
+};
 use std::ffi::c_char;
 use wow_srp::client::SrpClientUser as SrpClientUserInner;
 
+/// First step of client side authentication.
+///
+/// Created through `wow_srp_client_user_from_username_and_password`.
 pub struct WowSrpClientUser(SrpClientUserInner);
 
+/// Creates a new `WowSrpClientUser` from a username and password.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `password` is a null terminated string no longer than 16 characters.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 #[no_mangle]
 pub extern "C" fn wow_srp_client_user_from_username_and_password(
     username: *const c_char,
@@ -26,6 +42,20 @@ pub extern "C" fn wow_srp_client_user_from_username_and_password(
     Box::into_raw(v)
 }
 
+/// Converts the `WowSrpClientUser` into a `WowSrpClientChallenge`.
+///
+/// This should be called after receiving `CMD_AUTH_LOGON_CHALLENGE_Server`.
+///
+/// * `large_safe_prime` is a `WOW_SRP_KEY_LENGTH` array.
+/// * `server_public_key` is a `WOW_SRP_KEY_LENGTH` array.
+/// * `salt` is a `WOW_SRP_KEY_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 #[no_mangle]
 pub extern "C" fn wow_srp_client_user_into_challenge(
     client_user: *mut WowSrpClientUser,
@@ -59,4 +89,13 @@ pub extern "C" fn wow_srp_client_user_into_challenge(
     let challenge = Box::new(WowSrpClientChallenge::new(challenge));
 
     Box::into_raw(challenge)
+}
+
+/// Frees a `WowSrpClientUser`.
+///
+/// This should not normally need to be called since `wow_srp_client_user_into_challenge` will
+/// free the object.
+#[no_mangle]
+pub extern "C" fn wow_srp_client_user_free(client_user: *mut WowSrpClientUser) {
+    free_box_ptr(client_user)
 }

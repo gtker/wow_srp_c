@@ -20,7 +20,10 @@ pub fn char_ptr_to_string(ptr: *const c_char, out_error: *mut c_char) -> Option<
     let str = match NormalizedString::new(str) {
         Ok(e) => e,
         Err(_) => {
-            write_error(out_error, crate::WOW_SRP_ERROR_NON_ASCII);
+            write_error(
+                out_error,
+                crate::WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME,
+            );
             return None;
         }
     };
