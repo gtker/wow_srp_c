@@ -34,21 +34,35 @@ typedef struct WowSrpProof WowSrpProof;
 
 typedef struct WowSrpServer WowSrpServer;
 
+#if defined(WOW_SRP_TBC_HEADER)
 typedef struct WowSrpTbcHeaderCrypto WowSrpTbcHeaderCrypto;
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 typedef struct WowSrpTbcProofSeed WowSrpTbcProofSeed;
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 typedef struct WowSrpVanillaHeaderCrypto WowSrpVanillaHeaderCrypto;
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 typedef struct WowSrpVanillaProofSeed WowSrpVanillaProofSeed;
+#endif
 
 typedef struct WowSrpVerifier WowSrpVerifier;
 
+#if defined(WOW_SRP_WRATH_HEADER)
 typedef struct WowSrpWrathClientCrypto WowSrpWrathClientCrypto;
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 typedef struct WowSrpWrathProofSeed WowSrpWrathProofSeed;
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 typedef struct WowSrpWrathServerCrypto WowSrpWrathServerCrypto;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -87,113 +101,167 @@ struct WowSrpClientChallenge *wow_srp_client_user_into_challenge(struct WowSrpCl
                                                                  const uint8_t *salt,
                                                                  char *out_error);
 
+#if defined(WOW_SRP_TBC_HEADER)
 void wow_srp_tbc_proof_seed_free(struct WowSrpTbcProofSeed *seed);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 struct WowSrpTbcProofSeed *wow_srp_tbc_proof_seed_new(void);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 uint32_t wow_srp_tbc_proof_seed(const struct WowSrpTbcProofSeed *seed, char *out_error);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 struct WowSrpTbcHeaderCrypto *wow_srp_proof_seed_into_tbc_client_header_crypto(struct WowSrpTbcProofSeed *seed,
                                                                                const char *username,
                                                                                const uint8_t *session_key,
                                                                                uint32_t server_seed,
                                                                                uint8_t *out_client_proof,
                                                                                char *out_error);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 struct WowSrpTbcHeaderCrypto *wow_srp_proof_seed_into_tbc_server_header_crypto(struct WowSrpTbcProofSeed *seed,
                                                                                const char *username,
                                                                                const uint8_t *session_key,
                                                                                const uint8_t *client_proof,
                                                                                uint32_t client_seed,
                                                                                char *out_error);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 void wow_srp_tbc_header_crypto_free(struct WowSrpTbcHeaderCrypto *header);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 void wow_srp_tbc_header_crypto_encrypt(struct WowSrpTbcHeaderCrypto *header,
                                        uint8_t *data,
                                        uint16_t length,
                                        char *out_error);
+#endif
 
+#if defined(WOW_SRP_TBC_HEADER)
 void wow_srp_tbc_header_crypto_decrypt(struct WowSrpTbcHeaderCrypto *header,
                                        uint8_t *data,
                                        uint16_t length,
                                        char *out_error);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 void wow_srp_vanilla_proof_seed_free(struct WowSrpVanillaProofSeed *seed);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 struct WowSrpVanillaProofSeed *wow_srp_vanilla_proof_seed_new(void);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 uint32_t wow_srp_vanilla_proof_seed(const struct WowSrpVanillaProofSeed *seed, char *out_error);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 struct WowSrpVanillaHeaderCrypto *wow_srp_proof_seed_into_vanilla_client_header_crypto(struct WowSrpVanillaProofSeed *seed,
                                                                                        const char *username,
                                                                                        const uint8_t *session_key,
                                                                                        uint32_t server_seed,
                                                                                        uint8_t *out_client_proof,
                                                                                        char *out_error);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 struct WowSrpVanillaHeaderCrypto *wow_srp_proof_seed_into_vanilla_server_header_crypto(struct WowSrpVanillaProofSeed *seed,
                                                                                        const char *username,
                                                                                        const uint8_t *session_key,
                                                                                        const uint8_t *client_proof,
                                                                                        uint32_t client_seed,
                                                                                        char *out_error);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 void wow_srp_vanilla_header_crypto_free(struct WowSrpVanillaHeaderCrypto *header);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 void wow_srp_vanilla_header_crypto_encrypt(struct WowSrpVanillaHeaderCrypto *header,
                                            uint8_t *data,
                                            uint16_t length,
                                            char *out_error);
+#endif
 
+#if defined(WOW_SRP_VANILLA_HEADER)
 void wow_srp_vanilla_header_crypto_decrypt(struct WowSrpVanillaHeaderCrypto *header,
                                            uint8_t *data,
                                            uint16_t length,
                                            char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_proof_seed_free(struct WowSrpWrathProofSeed *seed);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 struct WowSrpWrathProofSeed *wow_srp_wrath_proof_seed_new(void);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 uint32_t wow_srp_wrath_proof_seed(const struct WowSrpWrathProofSeed *seed, char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 struct WowSrpWrathClientCrypto *wow_srp_proof_seed_into_wrath_client_crypto(struct WowSrpWrathProofSeed *seed,
                                                                             const char *username,
                                                                             const uint8_t *session_key,
                                                                             uint32_t server_seed,
                                                                             uint8_t *out_client_proof,
                                                                             char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 struct WowSrpWrathServerCrypto *wow_srp_proof_seed_into_wrath_server_crypto(struct WowSrpWrathProofSeed *seed,
                                                                             const char *username,
                                                                             const uint8_t *session_key,
                                                                             const uint8_t *client_proof,
                                                                             uint32_t client_seed,
                                                                             char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_server_crypto_free(struct WowSrpWrathServerCrypto *header);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_server_crypto_encrypt(struct WowSrpWrathServerCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
                                          char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_server_crypto_decrypt(struct WowSrpWrathServerCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
                                          char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_client_crypto_free(struct WowSrpWrathClientCrypto *header);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_client_crypto_encrypt(struct WowSrpWrathClientCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
                                          char *out_error);
+#endif
 
+#if defined(WOW_SRP_WRATH_HEADER)
 void wow_srp_wrath_client_crypto_decrypt(struct WowSrpWrathClientCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
                                          char *out_error);
+#endif
 
 void wow_srp_proof_free(struct WowSrpProof *proof);
 
