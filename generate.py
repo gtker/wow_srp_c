@@ -26,16 +26,12 @@ def define_to_file(define: str) -> str:
     raise Exception(f"invalid define '{define}'")
 
 
-def split_includes(output: str, cpp: bool) -> dict[str, list[str]]:
+def split_includes(output: str) -> dict[str, list[str]]:
     C_INCLUDES = ["#include <stdint.h>", ""]
-    CPP_INCLUDES = ["#include <cstdint>", ""]
 
     files = {}
     for value in DEFINES_TO_FILES.values():
-        if cpp:
-            files[value] = CPP_INCLUDES.copy()
-        else:
-            files[value] = C_INCLUDES.copy()
+        files[value] = C_INCLUDES.copy()
 
     current_file: typing.Optional[str] = None
 
@@ -63,12 +59,10 @@ def split_includes(output: str, cpp: bool) -> dict[str, list[str]]:
     return files
 
 
-def write_files(files: dict[str, list[str]], cpp: bool):
+def write_files(files: dict[str, list[str]]):
     for file, content in files.items():
         content = '\n'.join(content)
         filename = f"{file}.h"
-        if cpp:
-            filename += "pp"
         with open(INCLUDE_DIR / filename, "w") as f:
             f.write(content)
 
@@ -77,10 +71,6 @@ def main():
     c_output = run_cmd(["cbindgen", "--cpp-compat", "--lang", "c"], stdout=subprocess.PIPE, check=True).stdout.decode(
         'utf-8')
     write_files(split_includes(c_output, False), False)
-
-    cpp_output = run_cmd(["cbindgen", "--lang", "c++"], stdout=subprocess.PIPE, check=True).stdout.decode('utf-8')
-    write_files(split_includes(cpp_output, True), True)
-
 
 if __name__ == "__main__":
     main()
