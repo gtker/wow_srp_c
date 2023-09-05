@@ -9,7 +9,7 @@ SCRIPT_DIR = Path(path.dirname(path.realpath(__file__)))
 INCLUDE_DIR = SCRIPT_DIR / "include" / "wow_srp"
 
 DEFINES_TO_FILES: dict[str, str] = {
-    "VALUES": "values",
+    "VALUES": "wow_srp",
     "CLIENT": "client",
     "SERVER": "server",
     "WRATH": "wrath",
@@ -43,7 +43,7 @@ def split_includes(output: str) -> dict[str, list[str]]:
         elif "#if defined" in line:
             current_file = define_to_file(line)
         elif "WOW_SRP_LARGE_SAFE_PRIME_LITTLE_ENDIAN" in line:
-            files["values"].append(line)
+            files["wow_srp"].append(line)
         elif "extern \"C\"" in line or "__cplusplus" in line:
             for value in DEFINES_TO_FILES.values():
                 files[value].append(line)
