@@ -1,0 +1,13 @@
+[package]
+name = "wow_srp_c"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "wow_srp"
+crate-type = ["cdylib", "staticlib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wow_srp = { version = "0.6.0", features = ["srp-default-math"] }
