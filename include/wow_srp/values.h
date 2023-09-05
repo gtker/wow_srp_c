@@ -1,6 +1,8 @@
+#pragma once
+
 #include <stdint.h>
 
-#define CLIENT_HEADER_LENGTH 6
+#define WOW_SRP_CLIENT_HEADER_LENGTH 6
 
 
 /**

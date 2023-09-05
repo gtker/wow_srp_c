@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 #define WOW_SRP_TBC_SERVER_HEADER_LENGTH 4

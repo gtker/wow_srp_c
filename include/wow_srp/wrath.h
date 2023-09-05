@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 #define WRATH_SERVER_HEADER_MINIMUM_LENGTH 4

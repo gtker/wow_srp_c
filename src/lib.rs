@@ -13,7 +13,7 @@ mod values {
     use std::ffi::c_char;
     use wow_srp::LARGE_SAFE_PRIME_LITTLE_ENDIAN;
 
-    pub const CLIENT_HEADER_LENGTH: u8 = 6;
+    pub const WOW_SRP_CLIENT_HEADER_LENGTH: u8 = 6;
 
     /// Length of the password verifier returned by `wow_srp_verifier_password_verifier` in bytes.
     ///

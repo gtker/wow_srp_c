@@ -27,7 +27,7 @@ def define_to_file(define: str) -> str:
 
 
 def split_includes(output: str) -> dict[str, list[str]]:
-    C_INCLUDES = ["#include <stdint.h>", ""]
+    C_INCLUDES = ["#pragma once", "", "#include <stdint.h>", ""]
 
     files = {}
     for value in DEFINES_TO_FILES.values():
@@ -70,7 +70,8 @@ def write_files(files: dict[str, list[str]]):
 def main():
     c_output = run_cmd(["cbindgen", "--cpp-compat", "--lang", "c"], stdout=subprocess.PIPE, check=True).stdout.decode(
         'utf-8')
-    write_files(split_includes(c_output, False), False)
+    write_files(split_includes(c_output))
+
 
 if __name__ == "__main__":
     main()
