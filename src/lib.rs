@@ -1,15 +1,16 @@
-#[cfg(feature = "client")]
+#[cfg(not(feature = "disable_client"))]
 pub mod client;
 pub mod header_crypto;
-#[cfg(feature = "server")]
+#[cfg(not(feature = "disable_server"))]
 pub mod server;
 mod util;
 
+#[cfg(not(any(feature = "disable_client", feature = "disable_server")))]
 pub use values::*;
 
 pub const CLIENT_HEADER_LENGTH: u8 = 6;
 
-#[cfg(any(feature = "client", feature = "server"))]
+#[cfg(not(any(feature = "disable_client", feature = "disable_server")))]
 mod values {
     use std::ffi::c_char;
     use wow_srp::LARGE_SAFE_PRIME_LITTLE_ENDIAN;

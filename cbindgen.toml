@@ -1,6 +1,6 @@
 [defines]
-"feature = vanilla_header" = "WOW_SRP_VANILLA_HEADER"
-"feature = tbc_header" = "WOW_SRP_TBC_HEADER"
-"feature = wrath_header" = "WOW_SRP_WRATH_HEADER"
-"feature = client" = "WOW_SRP_CLIENT"
-"feature = server" = "WOW_SRP_SERVER"
+"feature = disable_vanilla_header" = "WOW_SRP_DISABLE_VANILLA_HEADER"
+"feature = disable_tbc_header" = "WOW_SRP_DISABLE_TBC_HEADER"
+"feature = disable_wrath_header" = "WOW_SRP_DISABLE_WRATH_HEADER"
+"feature = disable_client" = "WOW_SRP_DISABLE_CLIENT"
+"feature = disable_server" = "WOW_SRP_DISABLE_SERVER"

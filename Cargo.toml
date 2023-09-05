@@ -1,19 +1,21 @@
 [package]
 name = "wow_srp_c"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2021"
+publish = false
 
 [lib]
 name = "wow_srp"
 crate-type = ["cdylib", "staticlib"]
 
 [features]
-default = ["vanilla_header", "tbc_header", "wrath_header", "client", "server"]
-vanilla_header = []
-tbc_header = []
-wrath_header = []
-client = []
-server = []
+default = []
+# Features are inversed to give better UX for C lib
+disable_vanilla_header = []
+disable_tbc_header = []
+disable_wrath_header = []
+disable_client = []
+disable_server = []
 
 [dependencies]
 wow_srp = { version = "0.6.0", features = ["srp-default-math", "wrath-header", "tbc-header"] }
