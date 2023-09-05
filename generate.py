@@ -7,6 +7,7 @@ from subprocess import run as run_cmd
 
 SCRIPT_DIR = Path(path.dirname(path.realpath(__file__)))
 INCLUDE_DIR = SCRIPT_DIR / "include" / "wow_srp"
+CPP_INCLUDE_DIR = SCRIPT_DIR / "wow_srp_cpp" / "include" / "wow_srp_cpp"
 
 DEFINES_TO_FILES: dict[str, str] = {
     "VALUES": "wow_srp",
@@ -67,10 +68,50 @@ def write_files(files: dict[str, list[str]]):
             f.write(content)
 
 
+def write_cpp_general(content: list[str]):
+    file_contents = []
+
+    for line in content:
+        if "#include <stdint.h>" in line:
+            file_contents.append("#include <cstdint>")
+            file_contents.append("#include <array>")
+            file_contents.append("\n")
+            file_contents.append("namespace wow_srp {")
+        elif "#define " in line:
+            line = line.split(" ")
+            name = line[1].replace("WOW_SRP_", "")
+            value = line[2]
+            file_contents.append(f"constexpr int {name} = {value};")
+        elif "extern const uint8_t" in line:
+            file_contents.append(
+                "constexpr std::array<uint8_t, 32> LARGE_SAFE_PRIME {0xb7, 0x9b, 0x3e, 0x2a, 0x87, 0x82, 0x3c, 0xab, 0x8f, 0x5e, 0xbf, 0xbf, 0x8e, 0xb1, 0x1, 0x8, 0x53, 0x50, 0x6, 0x29, 0x8b, 0x5b, 0xad, 0xbd, 0x5b, 0x53, 0xe1, 0x89, 0x5e, 0x64, 0x4b, 0x89};")
+            file_contents.append("\n")
+        elif "__cplusplus" in line or "extern \"C\"" in line:
+            continue
+        else:
+            file_contents.append(line)
+
+    file_contents.append("using ProofArray = std::array<uint8_t, PROOF_LENGTH>;")
+    file_contents.append("")
+    file_contents.append("using SessionKeyArray = std::array<uint8_t, SESSION_KEY_LENGTH>;")
+    file_contents.append("")
+    file_contents.append("using KeyArray = std::array<uint8_t, KEY_LENGTH>;")
+    file_contents.append("")
+    file_contents.append("using ReconnectDataArray = std::array<uint8_t, RECONNECT_DATA_LENGTH>;")
+    file_contents.append("")
+
+    file_contents.append("} // namespace wow_srp")
+
+    with open(CPP_INCLUDE_DIR / "wow_srp.hpp", "w") as f:
+        f.write("\n".join(file_contents))
+
+
 def main():
     c_output = run_cmd(["cbindgen", "--cpp-compat", "--lang", "c"], stdout=subprocess.PIPE, check=True).stdout.decode(
         'utf-8')
-    write_files(split_includes(c_output))
+    files = split_includes(c_output)
+    write_files(files)
+    write_cpp_general(files["wow_srp"])
 
 
 if __name__ == "__main__":

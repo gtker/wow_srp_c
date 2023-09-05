@@ -17,7 +17,11 @@ You should only use one of these, and probably the C++ one unless you know what 
 
 ```cmake
 add_subdirectory(wow_srp_c)
+
+# For C API
 target_link_libraries(YOUR_TARGET_HERE PRIVATE wow_srp::wow_srp)
+# For C++ API
+target_link_libraries(YOUR_TARGET_HERE PRIVATE wow_srp_cpp::wow_srp_cpp)
 ```
 
 * Import the `wow_srp/{client, server, wow_srp, wrath, tbc, vanilla}.h` headers file.
@@ -32,6 +36,7 @@ By default, both static libraries (`.a`/`.lib`) and shared libraries (`.so`/`.dl
 * Either add the `target/release` directory to your library path or copy the `target/release/wow_srp.(dll/so/a/lib)`
   files to your build directory.
 * Import the relevant header files from `wow_srp/`.
+* For C++, compile `wow_srp_c/wow_srp_cpp/src` with include path in `wow_srp_cpp/include`.
 
 # Server Usage
 

@@ -24,10 +24,10 @@ mod values {
     pub const WOW_SRP_SESSION_KEY_LENGTH: u8 = 40;
 
     /// Length of the proofs produced and used in bytes.
-    pub const WOW_SRP_PROOF_LENGTH: u8 = 40;
+    pub const WOW_SRP_PROOF_LENGTH: u8 = 20;
 
     /// Length of the reconnect data used in bytes.
-    pub const WOW_SRP_RECONNECT_DATA_LENGTH: u8 = 40;
+    pub const WOW_SRP_RECONNECT_DATA_LENGTH: u8 = 16;
 
     /// Generator used by the server implementation.
     ///
