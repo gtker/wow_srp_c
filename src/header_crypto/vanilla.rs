@@ -8,15 +8,16 @@ use std::ffi::c_char;
 use wow_srp::vanilla_header::HeaderCrypto as HeaderCryptoInner;
 use wow_srp::vanilla_header::ProofSeed as ProofSeedInner;
 
-pub const VANILLA_SERVER_HEADER_LENGTH: u8 = 4;
+pub const WOW_SRP_VANILLA_SERVER_HEADER_LENGTH: u8 = 4;
 
+/// First step of header decryption for Vanilla.
+///
+/// Created through `wow_srp_vanilla_proof_seed_new`.
 pub struct WowSrpVanillaProofSeed(ProofSeedInner);
 
-#[no_mangle]
-pub extern "C" fn wow_srp_vanilla_proof_seed_free(seed: *mut WowSrpVanillaProofSeed) {
-    free_box_ptr(seed)
-}
-
+/// Creates a proof seed.
+///
+/// Can not be null.
 #[no_mangle]
 pub extern "C" fn wow_srp_vanilla_proof_seed_new() -> *mut WowSrpVanillaProofSeed {
     let seed = Box::new(WowSrpVanillaProofSeed(ProofSeedInner::new()));
@@ -24,6 +25,9 @@ pub extern "C" fn wow_srp_vanilla_proof_seed_new() -> *mut WowSrpVanillaProofSee
     Box::into_raw(seed)
 }
 
+/// Returns the randomized seed value.
+///
+/// Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
 #[no_mangle]
 pub extern "C" fn wow_srp_vanilla_proof_seed(
     seed: *const WowSrpVanillaProofSeed,
@@ -36,8 +40,20 @@ pub extern "C" fn wow_srp_vanilla_proof_seed(
     seed.0.seed()
 }
 
+/// Converts the seed into a `WowSrpVanillaHeaderCrypto` for the client.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `out_client_proof` is a `WOW_SRP_PROOF_LENGTH` array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 #[no_mangle]
-pub extern "C" fn wow_srp_proof_seed_into_vanilla_client_header_crypto(
+pub extern "C" fn wow_srp_vanilla_proof_seed_into_client_header_crypto(
     seed: *mut WowSrpVanillaProofSeed,
     username: *const c_char,
     session_key: *const u8,
@@ -69,8 +85,20 @@ pub extern "C" fn wow_srp_proof_seed_into_vanilla_client_header_crypto(
     Box::into_raw(header_crypto)
 }
 
+/// Converts the seed into a `WowSrpVanillaHeaderCrypto` for the server.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `client_proof` is a `WOW_SRP_PROOF_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 #[no_mangle]
-pub extern "C" fn wow_srp_proof_seed_into_vanilla_server_header_crypto(
+pub extern "C" fn wow_srp_vanilla_proof_seed_into_server_header_crypto(
     seed: *mut WowSrpVanillaProofSeed,
     username: *const c_char,
     session_key: *const u8,
@@ -108,6 +136,20 @@ pub extern "C" fn wow_srp_proof_seed_into_vanilla_server_header_crypto(
     Box::into_raw(header_crypto)
 }
 
+/// Frees the `WowSrpVanillaProofSeed`.
+///
+/// This should not normally be called since `wow_srp_vanilla_proof_seed_into_vanilla_*` functions
+/// free this object.
+#[no_mangle]
+pub extern "C" fn wow_srp_vanilla_proof_seed_free(seed: *mut WowSrpVanillaProofSeed) {
+    free_box_ptr(seed)
+}
+
+/// Header crypto for Vanilla.
+///
+/// Created through `wow_srp_vanilla_proof_seed_into_*_header_crypto`.
+///
+/// This object must manually be freed.
 pub struct WowSrpVanillaHeaderCrypto(HeaderCryptoInner);
 
 impl WowSrpVanillaHeaderCrypto {
@@ -116,11 +158,18 @@ impl WowSrpVanillaHeaderCrypto {
     }
 }
 
-#[no_mangle]
-pub extern "C" fn wow_srp_vanilla_header_crypto_free(header: *mut WowSrpVanillaHeaderCrypto) {
-    free_box_ptr(header)
-}
-
+/// Encrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_VANILLA_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 #[no_mangle]
 pub extern "C" fn wow_srp_vanilla_header_crypto_encrypt(
     header: *mut WowSrpVanillaHeaderCrypto,
@@ -141,6 +190,18 @@ pub extern "C" fn wow_srp_vanilla_header_crypto_encrypt(
     header.0.encrypt(data);
 }
 
+/// Decrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_VANILLA_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 #[no_mangle]
 pub extern "C" fn wow_srp_vanilla_header_crypto_decrypt(
     header: *mut WowSrpVanillaHeaderCrypto,
@@ -159,4 +220,12 @@ pub extern "C" fn wow_srp_vanilla_header_crypto_decrypt(
     let data = unsafe { std::slice::from_raw_parts_mut(data, length.into()) };
 
     header.0.decrypt(data);
+}
+
+/// Free the `WowSrpVanillaHeaderCrypto`.
+///
+/// This must manually be done.
+#[no_mangle]
+pub extern "C" fn wow_srp_vanilla_header_crypto_free(header: *mut WowSrpVanillaHeaderCrypto) {
+    free_box_ptr(header)
 }

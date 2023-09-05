@@ -71,6 +71,8 @@ stored salt and password verifier. Then convert it into a `WowSrpProof` with `wo
 
 After receiving the client public key the `WowSrpProof` should be turned into a `WowSrpServer` with `wow_srp_proof_into_server`.
 
+Temporarily save the session key for header decryption.
+
 # Client Usage
 
 Ensure the `WOW_SRP_DISABLE_CLIENT` define is not set.
@@ -78,9 +80,18 @@ Ensure the `WOW_SRP_DISABLE_CLIENT` define is not set.
 The general flow is:
 
 ```text
-WowSrpClientUser -> WowSrpClientChallenge -> WowSrpClient
+WowSrpClientChallenge -> WowSrpClient
 ```
 
-Create a `WowSrpClientUser` through `wow_srp_client_user_from_username_and_password` with your username/password.
-After receiving [CMD_AUTH_LOGON_CHALLENGE_Server](https://gtker.com/wow_messages/docs/cmd_auth_logon_challenge_server.html)
-convert it toa `WowSrp`
+Create a `WowSrpClienChallenge` through `wow_srp_client_challenge` with your username/password and the values received from
+[CMD_AUTH_LOGON_CHALLENGE_Server](https://gtker.com/wow_messages/docs/cmd_auth_logon_challenge_server.html).
+Send the `client_public_key` and `client_proof` to the server with `wow_srp_client_challenge_client_public_key`
+and `wow_srp_client_challenge_client_proof`.
+
+After receiving [CMD_AUTH_LOGON_PROOF_Server](https://gtker.com/wow_messages/docs/cmd_auth_logon_proof_server.html) create a 
+`WowSrpClient` through `wow_srp_client_challenge_verify_server_proof`.
+
+Save the session key for header decryption.
+
+# Header Decryption
+

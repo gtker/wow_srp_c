@@ -7,11 +7,11 @@
 constexpr static const uint8_t CLIENT_HEADER_LENGTH = 6;
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-constexpr static const uint8_t TBC_SERVER_HEADER_LENGTH = 4;
+constexpr static const uint8_t WOW_SRP_TBC_SERVER_HEADER_LENGTH = 4;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
-constexpr static const uint8_t VANILLA_SERVER_HEADER_LENGTH = 4;
+constexpr static const uint8_t WOW_SRP_VANILLA_SERVER_HEADER_LENGTH = 4;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
@@ -86,18 +86,17 @@ constexpr static const char WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH = 5;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
+/// Final step of client side authentication.
+///
+/// This must be manually freed with `wow_srp_client_free`.
 struct WowSrpClient;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
-struct WowSrpClientChallenge;
-#endif
-
-#if !defined(WOW_SRP_DISABLE_CLIENT)
-/// First step of client side authentication.
+/// First part of the client side authentication.
 ///
-/// Created through `wow_srp_client_user_from_username_and_password`.
-struct WowSrpClientUser;
+/// Created through `wow_srp_client_challenge_create`.
+struct WowSrpClientChallenge;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_SERVER)
@@ -117,18 +116,34 @@ struct WowSrpServer;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-struct WowSrpTbcHeaderCrypto;
+/// Header crypto for TBC.
+///
+/// Created through `wow_srp_tbc_proof_seed_into_*_header_crypto`.
+///
+/// This object must manually be freed.
+struct WowSrpTBCHeaderCrypto;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-struct WowSrpTbcProofSeed;
+/// First step of header decryption for TBC.
+///
+/// Created through `wow_srp_tbc_proof_seed_new`.
+struct WowSrpTBCProofSeed;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// Header crypto for Vanilla.
+///
+/// Created through `wow_srp_vanilla_proof_seed_into_*_header_crypto`.
+///
+/// This object must manually be freed.
 struct WowSrpVanillaHeaderCrypto;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// First step of header decryption for Vanilla.
+///
+/// Created through `wow_srp_vanilla_proof_seed_new`.
 struct WowSrpVanillaProofSeed;
 #endif
 
@@ -139,6 +154,11 @@ struct WowSrpVerifier;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Header crypto for Wrath servers.
+///
+/// Created through `wow_srp_wrath_proof_seed_into_client_header_crypto`.
+///
+/// This object must manually be freed.
 struct WowSrpWrathClientCrypto;
 #endif
 
@@ -147,6 +167,11 @@ struct WowSrpWrathProofSeed;
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Header crypto for Wrath servers.
+///
+/// Created through `wow_srp_wrath_proof_seed_into_server_header_crypto`.
+///
+/// This object must manually be freed.
 struct WowSrpWrathServerCrypto;
 #endif
 
@@ -155,14 +180,27 @@ extern "C" {
 extern const uint8_t WOW_SRP_LARGE_SAFE_PRIME_LITTLE_ENDIAN[32];
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
-void wow_srp_client_free(WowSrpClient *client);
-#endif
-
-#if !defined(WOW_SRP_DISABLE_CLIENT)
+/// Returns the session key as a `WOW_SRP_SESSION_KEY_LENGTH` sized array.
+///
+/// This should be used for header decryption.
+///
+/// Will return null if `proof` is null.
 const uint8_t *wow_srp_client_session_key(WowSrpClient *client);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
+/// Calculates the client proof for reconnection.
+///
+/// * `server_challenge_data` is a `WOW_SRP_RECONNECT_DATA_LENGTH` array.
+/// * `out_client_challenge_data` is a `WOW_SRP_RECONNECT_DATA_LENGTH` array that will be written to.
+/// * `out_client_proof` is a `WOW_SRP_PROOF_LENGTH` array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_INVALID_PUBLIC_KEY` if the public key is invalid.
+/// * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
 void wow_srp_client_calculate_reconnect_values(WowSrpClient *client,
                                                const uint8_t *server_challenge_data,
                                                uint8_t *out_client_challenge_data,
@@ -171,45 +209,17 @@ void wow_srp_client_calculate_reconnect_values(WowSrpClient *client,
 #endif
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
-void wow_srp_client_challenge_free(WowSrpClientChallenge *client_challenge);
+/// Frees a `WowSrpClient`.
+void wow_srp_client_free(WowSrpClient *client);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
-const uint8_t *wow_srp_client_challenge_client_proof(WowSrpClientChallenge *client_challenge);
-#endif
-
-#if !defined(WOW_SRP_DISABLE_CLIENT)
-const uint8_t *wow_srp_client_challenge_client_public_key(WowSrpClientChallenge *client_challenge);
-#endif
-
-#if !defined(WOW_SRP_DISABLE_CLIENT)
-WowSrpClient *wow_srp_client_challenge_verify_server_proof(WowSrpClientChallenge *client_challenge,
-                                                           const uint8_t *server_proof,
-                                                           char *out_error);
-#endif
-
-#if !defined(WOW_SRP_DISABLE_CLIENT)
-/// Creates a new `WowSrpClientUser` from a username and password.
-///
-/// * `username` is a null terminated string no longer than 16 characters.
-/// * `password` is a null terminated string no longer than 16 characters.
-/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
-///
-/// This function can return a null pointer, in which case errors will be in `out_error`.
-/// It can return:
-/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
-/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
-/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
-WowSrpClientUser *wow_srp_client_user_from_username_and_password(const char *username,
-                                                                 const char *password,
-                                                                 char *out_error);
-#endif
-
-#if !defined(WOW_SRP_DISABLE_CLIENT)
-/// Converts the `WowSrpClientUser` into a `WowSrpClientChallenge`.
+/// Create a `WowSrpClientChallenge`.
 ///
 /// This should be called after receiving `CMD_AUTH_LOGON_CHALLENGE_Server`.
 ///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `password` is a null terminated string no longer than 16 characters.
 /// * `large_safe_prime` is a `WOW_SRP_KEY_LENGTH` array.
 /// * `server_public_key` is a `WOW_SRP_KEY_LENGTH` array.
 /// * `salt` is a `WOW_SRP_KEY_LENGTH` array.
@@ -220,36 +230,87 @@ WowSrpClientUser *wow_srp_client_user_from_username_and_password(const char *use
 /// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 /// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
 /// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
-WowSrpClientChallenge *wow_srp_client_user_into_challenge(WowSrpClientUser *client_user,
-                                                          uint8_t generator,
-                                                          const uint8_t *large_safe_prime,
-                                                          const uint8_t *server_public_key,
-                                                          const uint8_t *salt,
-                                                          char *out_error);
+/// * `WOW_SRP_ERROR_INVALID_PUBLIC_KEY` if the public key is invalid.
+/// * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
+WowSrpClientChallenge *wow_srp_client_challenge_create(const char *username,
+                                                       const char *password,
+                                                       uint8_t generator,
+                                                       const uint8_t *large_safe_prime,
+                                                       const uint8_t *server_public_key,
+                                                       const uint8_t *salt,
+                                                       char *out_error);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_CLIENT)
-/// Frees a `WowSrpClientUser`.
+/// Returns the client proof as a `WOW_SRP_PROOF_LENGTH` sized array.
 ///
-/// This should not normally need to be called since `wow_srp_client_user_into_challenge` will
-/// free the object.
-void wow_srp_client_user_free(WowSrpClientUser *client_user);
+/// This should be passed to the client through `CMD_AUTH_LOGON_PROOF_Client`.
+///
+/// Will return null if `proof` is null.
+const uint8_t *wow_srp_client_challenge_client_proof(WowSrpClientChallenge *client_challenge);
+#endif
+
+#if !defined(WOW_SRP_DISABLE_CLIENT)
+/// Returns the client proof as a `WOW_SRP_KEY_LENGTH` sized array.
+///
+/// This should be passed to the client through `CMD_AUTH_LOGON_PROOF_Client`.
+///
+/// Will return null if `proof` is null.
+const uint8_t *wow_srp_client_challenge_client_public_key(WowSrpClientChallenge *client_challenge);
+#endif
+
+#if !defined(WOW_SRP_DISABLE_CLIENT)
+/// Convert the `WowSrpClientChallenge` into a `WowSrpClient` and
+/// verify that the server and client proofs match.
+///
+/// * `server_proof` is a `WOW_SRP_PROOF_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
+WowSrpClient *wow_srp_client_challenge_verify_server_proof(WowSrpClientChallenge *client_challenge,
+                                                           const uint8_t *server_proof,
+                                                           char *out_error);
+#endif
+
+#if !defined(WOW_SRP_DISABLE_CLIENT)
+/// Frees a `WowSrpClientChallenge`.
+///
+/// This should not normally need to be called since `wow_srp_proof_into_server` will
+/// free the proof.
+void wow_srp_client_challenge_free(WowSrpClientChallenge *client_challenge);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-void wow_srp_tbc_proof_seed_free(WowSrpTbcProofSeed *seed);
+/// Creates a proof seed.
+///
+/// Can not be null.
+WowSrpTBCProofSeed *wow_srp_tbc_proof_seed_new();
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-WowSrpTbcProofSeed *wow_srp_tbc_proof_seed_new();
+/// Returns the randomized seed value.
+///
+/// Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
+uint32_t wow_srp_tbc_proof_seed(const WowSrpTBCProofSeed *seed, char *out_error);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-uint32_t wow_srp_tbc_proof_seed(const WowSrpTbcProofSeed *seed, char *out_error);
-#endif
-
-#if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-WowSrpTbcHeaderCrypto *wow_srp_proof_seed_into_tbc_client_header_crypto(WowSrpTbcProofSeed *seed,
+/// Converts the seed into a `WowSrpTBCHeaderCrypto` for the client.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `out_client_proof` is a `WOW_SRP_PROOF_LENGTH` array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
+WowSrpTBCHeaderCrypto *wow_srp_tbc_proof_seed_into_client_header_crypto(WowSrpTBCProofSeed *seed,
                                                                         const char *username,
                                                                         const uint8_t *session_key,
                                                                         uint32_t server_seed,
@@ -258,7 +319,19 @@ WowSrpTbcHeaderCrypto *wow_srp_proof_seed_into_tbc_client_header_crypto(WowSrpTb
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-WowSrpTbcHeaderCrypto *wow_srp_proof_seed_into_tbc_server_header_crypto(WowSrpTbcProofSeed *seed,
+/// Converts the seed into a `WowSrpTBCHeaderCrypto` for the server.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `client_proof` is a `WOW_SRP_PROOF_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
+WowSrpTBCHeaderCrypto *wow_srp_tbc_proof_seed_into_server_header_crypto(WowSrpTBCProofSeed *seed,
                                                                         const char *username,
                                                                         const uint8_t *session_key,
                                                                         const uint8_t *client_proof,
@@ -267,37 +340,86 @@ WowSrpTbcHeaderCrypto *wow_srp_proof_seed_into_tbc_server_header_crypto(WowSrpTb
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-void wow_srp_tbc_header_crypto_free(WowSrpTbcHeaderCrypto *header);
+/// Frees the `WowSrpTBCProofSeed`.
+///
+/// This should not normally be called since `wow_srp_tbc_proof_seed_into_tbc_*` functions
+/// free this object.
+void wow_srp_tbc_proof_seed_free(WowSrpTBCProofSeed *seed);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-void wow_srp_tbc_header_crypto_encrypt(WowSrpTbcHeaderCrypto *header,
+/// Encrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_TBC_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+void wow_srp_tbc_header_crypto_encrypt(WowSrpTBCHeaderCrypto *header,
                                        uint8_t *data,
                                        uint16_t length,
                                        char *out_error);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_TBC_HEADER)
-void wow_srp_tbc_header_crypto_decrypt(WowSrpTbcHeaderCrypto *header,
+/// Decrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_TBC_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+void wow_srp_tbc_header_crypto_decrypt(WowSrpTBCHeaderCrypto *header,
                                        uint8_t *data,
                                        uint16_t length,
                                        char *out_error);
 #endif
 
-#if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
-void wow_srp_vanilla_proof_seed_free(WowSrpVanillaProofSeed *seed);
+#if !defined(WOW_SRP_DISABLE_TBC_HEADER)
+/// Free the `WowSrpTBCHeaderCrypto`.
+///
+/// This must manually be done.
+void wow_srp_tbc_header_crypto_free(WowSrpTBCHeaderCrypto *header);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// Creates a proof seed.
+///
+/// Can not be null.
 WowSrpVanillaProofSeed *wow_srp_vanilla_proof_seed_new();
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// Returns the randomized seed value.
+///
+/// Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
 uint32_t wow_srp_vanilla_proof_seed(const WowSrpVanillaProofSeed *seed, char *out_error);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
-WowSrpVanillaHeaderCrypto *wow_srp_proof_seed_into_vanilla_client_header_crypto(WowSrpVanillaProofSeed *seed,
+/// Converts the seed into a `WowSrpVanillaHeaderCrypto` for the client.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `out_client_proof` is a `WOW_SRP_PROOF_LENGTH` array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
+WowSrpVanillaHeaderCrypto *wow_srp_vanilla_proof_seed_into_client_header_crypto(WowSrpVanillaProofSeed *seed,
                                                                                 const char *username,
                                                                                 const uint8_t *session_key,
                                                                                 uint32_t server_seed,
@@ -306,7 +428,19 @@ WowSrpVanillaHeaderCrypto *wow_srp_proof_seed_into_vanilla_client_header_crypto(
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
-WowSrpVanillaHeaderCrypto *wow_srp_proof_seed_into_vanilla_server_header_crypto(WowSrpVanillaProofSeed *seed,
+/// Converts the seed into a `WowSrpVanillaHeaderCrypto` for the server.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `client_proof` is a `WOW_SRP_PROOF_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
+WowSrpVanillaHeaderCrypto *wow_srp_vanilla_proof_seed_into_server_header_crypto(WowSrpVanillaProofSeed *seed,
                                                                                 const char *username,
                                                                                 const uint8_t *session_key,
                                                                                 const uint8_t *client_proof,
@@ -315,10 +449,26 @@ WowSrpVanillaHeaderCrypto *wow_srp_proof_seed_into_vanilla_server_header_crypto(
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
-void wow_srp_vanilla_header_crypto_free(WowSrpVanillaHeaderCrypto *header);
+/// Frees the `WowSrpVanillaProofSeed`.
+///
+/// This should not normally be called since `wow_srp_vanilla_proof_seed_into_vanilla_*` functions
+/// free this object.
+void wow_srp_vanilla_proof_seed_free(WowSrpVanillaProofSeed *seed);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// Encrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_VANILLA_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 void wow_srp_vanilla_header_crypto_encrypt(WowSrpVanillaHeaderCrypto *header,
                                            uint8_t *data,
                                            uint16_t length,
@@ -326,25 +476,58 @@ void wow_srp_vanilla_header_crypto_encrypt(WowSrpVanillaHeaderCrypto *header,
 #endif
 
 #if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// Decrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_VANILLA_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 void wow_srp_vanilla_header_crypto_decrypt(WowSrpVanillaHeaderCrypto *header,
                                            uint8_t *data,
                                            uint16_t length,
                                            char *out_error);
 #endif
 
-#if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
-void wow_srp_wrath_proof_seed_free(WowSrpWrathProofSeed *seed);
+#if !defined(WOW_SRP_DISABLE_VANILLA_HEADER)
+/// Free the `WowSrpVanillaHeaderCrypto`.
+///
+/// This must manually be done.
+void wow_srp_vanilla_header_crypto_free(WowSrpVanillaHeaderCrypto *header);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Creates a proof seed.
+///
+/// Can not be null.
 WowSrpWrathProofSeed *wow_srp_wrath_proof_seed_new();
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Returns the randomized seed value.
+///
+/// Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
 uint32_t wow_srp_wrath_proof_seed(const WowSrpWrathProofSeed *seed, char *out_error);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Converts the seed into a `WowSrpWrathHeaderCrypto` for the client.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `out_client_proof` is a `WOW_SRP_PROOF_LENGTH` array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 WowSrpWrathClientCrypto *wow_srp_proof_seed_into_wrath_client_crypto(WowSrpWrathProofSeed *seed,
                                                                      const char *username,
                                                                      const uint8_t *session_key,
@@ -354,6 +537,18 @@ WowSrpWrathClientCrypto *wow_srp_proof_seed_into_wrath_client_crypto(WowSrpWrath
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Converts the seed into a `WowSrpWrathHeaderCrypto` for the server.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `client_proof` is a `WOW_SRP_PROOF_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 WowSrpWrathServerCrypto *wow_srp_proof_seed_into_wrath_server_crypto(WowSrpWrathProofSeed *seed,
                                                                      const char *username,
                                                                      const uint8_t *session_key,
@@ -363,10 +558,27 @@ WowSrpWrathServerCrypto *wow_srp_proof_seed_into_wrath_server_crypto(WowSrpWrath
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
-void wow_srp_wrath_server_crypto_free(WowSrpWrathServerCrypto *header);
+/// First step of header decryption for Wrath.
+///
+/// Created through `wow_srp_wrath_proof_seed_new`.
+void wow_srp_wrath_proof_seed_free(WowSrpWrathProofSeed *seed);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Encrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the server this is either
+/// `WOW_SRP_WRATH_SERVER_MINIMUM_HEADER_LENGTH` or
+/// `WOW_SRP_WRATH_SERVER_MAXIMUM_HEADER_LENGTH`, depending on if the first byte
+/// has the `0x80` bit set.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 void wow_srp_wrath_server_crypto_encrypt(WowSrpWrathServerCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -374,6 +586,17 @@ void wow_srp_wrath_server_crypto_encrypt(WowSrpWrathServerCrypto *header,
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Decrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 void wow_srp_wrath_server_crypto_decrypt(WowSrpWrathServerCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -381,10 +604,24 @@ void wow_srp_wrath_server_crypto_decrypt(WowSrpWrathServerCrypto *header,
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
-void wow_srp_wrath_client_crypto_free(WowSrpWrathClientCrypto *header);
+/// Free the `WowSrpWrathServerCrypto`.
+///
+/// This must manually be done.
+void wow_srp_wrath_server_crypto_free(WowSrpWrathServerCrypto *header);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Encrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 void wow_srp_wrath_client_crypto_encrypt(WowSrpWrathClientCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -392,10 +629,31 @@ void wow_srp_wrath_client_crypto_encrypt(WowSrpWrathClientCrypto *header,
 #endif
 
 #if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Decrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the server this is either
+/// `WOW_SRP_WRATH_SERVER_MINIMUM_HEADER_LENGTH` or
+/// `WOW_SRP_WRATH_SERVER_MAXIMUM_HEADER_LENGTH`, depending on if the first byte
+/// has the `0x80` bit set.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 void wow_srp_wrath_client_crypto_decrypt(WowSrpWrathClientCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
                                          char *out_error);
+#endif
+
+#if !defined(WOW_SRP_DISABLE_WRATH_HEADER)
+/// Free the `WowSrpWrathClientCrypto`.
+///
+/// This must manually be done.
+void wow_srp_wrath_client_crypto_free(WowSrpWrathClientCrypto *header);
 #endif
 
 #if !defined(WOW_SRP_DISABLE_SERVER)

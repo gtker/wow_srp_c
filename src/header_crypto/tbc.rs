@@ -8,25 +8,29 @@ use std::ffi::c_char;
 use wow_srp::tbc_header::HeaderCrypto as HeaderCryptoInner;
 use wow_srp::tbc_header::ProofSeed as ProofSeedInner;
 
-pub const TBC_SERVER_HEADER_LENGTH: u8 = 4;
+pub const WOW_SRP_TBC_SERVER_HEADER_LENGTH: u8 = 4;
 
-pub struct WowSrpTbcProofSeed(ProofSeedInner);
+/// First step of header decryption for TBC.
+///
+/// Created through `wow_srp_tbc_proof_seed_new`.
+pub struct WowSrpTBCProofSeed(ProofSeedInner);
 
+/// Creates a proof seed.
+///
+/// Can not be null.
 #[no_mangle]
-pub extern "C" fn wow_srp_tbc_proof_seed_free(seed: *mut WowSrpTbcProofSeed) {
-    free_box_ptr(seed)
-}
-
-#[no_mangle]
-pub extern "C" fn wow_srp_tbc_proof_seed_new() -> *mut WowSrpTbcProofSeed {
-    let seed = Box::new(WowSrpTbcProofSeed(ProofSeedInner::new()));
+pub extern "C" fn wow_srp_tbc_proof_seed_new() -> *mut WowSrpTBCProofSeed {
+    let seed = Box::new(WowSrpTBCProofSeed(ProofSeedInner::new()));
 
     Box::into_raw(seed)
 }
 
+/// Returns the randomized seed value.
+///
+/// Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
 #[no_mangle]
 pub extern "C" fn wow_srp_tbc_proof_seed(
-    seed: *const WowSrpTbcProofSeed,
+    seed: *const WowSrpTBCProofSeed,
     out_error: *mut c_char,
 ) -> u32 {
     let Some(seed) = is_null(seed, out_error) else {
@@ -36,15 +40,27 @@ pub extern "C" fn wow_srp_tbc_proof_seed(
     seed.0.seed()
 }
 
+/// Converts the seed into a `WowSrpTBCHeaderCrypto` for the client.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `out_client_proof` is a `WOW_SRP_PROOF_LENGTH` array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 #[no_mangle]
-pub extern "C" fn wow_srp_proof_seed_into_tbc_client_header_crypto(
-    seed: *mut WowSrpTbcProofSeed,
+pub extern "C" fn wow_srp_tbc_proof_seed_into_client_header_crypto(
+    seed: *mut WowSrpTBCProofSeed,
     username: *const c_char,
     session_key: *const u8,
     server_seed: u32,
     out_client_proof: *mut u8,
     out_error: *mut c_char,
-) -> *mut WowSrpTbcHeaderCrypto {
+) -> *mut WowSrpTBCHeaderCrypto {
     let Some(seed) = retake_ownership(seed, out_error) else {
         return std::ptr::null_mut();
     };
@@ -64,20 +80,32 @@ pub extern "C" fn wow_srp_proof_seed_into_tbc_client_header_crypto(
 
     write_array(out_client_proof, client_proof.as_slice());
 
-    let header_crypto = Box::new(WowSrpTbcHeaderCrypto::new(header_crypto));
+    let header_crypto = Box::new(WowSrpTBCHeaderCrypto::new(header_crypto));
 
     Box::into_raw(header_crypto)
 }
 
+/// Converts the seed into a `WowSrpTBCHeaderCrypto` for the server.
+///
+/// * `username` is a null terminated string no longer than 16 characters.
+/// * `session_key` is a `WOW_SRP_SESSION_KEY_LENGTH` array.
+/// * `client_proof` is a `WOW_SRP_PROOF_LENGTH` array.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
+/// * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
+/// * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
 #[no_mangle]
-pub extern "C" fn wow_srp_proof_seed_into_tbc_server_header_crypto(
-    seed: *mut WowSrpTbcProofSeed,
+pub extern "C" fn wow_srp_tbc_proof_seed_into_server_header_crypto(
+    seed: *mut WowSrpTBCProofSeed,
     username: *const c_char,
     session_key: *const u8,
     client_proof: *const u8,
     client_seed: u32,
     out_error: *mut c_char,
-) -> *mut WowSrpTbcHeaderCrypto {
+) -> *mut WowSrpTBCHeaderCrypto {
     let Some(seed) = retake_ownership(seed, out_error) else {
         return std::ptr::null_mut();
     };
@@ -103,27 +131,48 @@ pub extern "C" fn wow_srp_proof_seed_into_tbc_server_header_crypto(
         return std::ptr::null_mut();
     };
 
-    let header_crypto = Box::new(WowSrpTbcHeaderCrypto::new(header));
+    let header_crypto = Box::new(WowSrpTBCHeaderCrypto::new(header));
 
     Box::into_raw(header_crypto)
 }
 
-pub struct WowSrpTbcHeaderCrypto(HeaderCryptoInner);
+/// Frees the `WowSrpTBCProofSeed`.
+///
+/// This should not normally be called since `wow_srp_tbc_proof_seed_into_tbc_*` functions
+/// free this object.
+#[no_mangle]
+pub extern "C" fn wow_srp_tbc_proof_seed_free(seed: *mut WowSrpTBCProofSeed) {
+    free_box_ptr(seed)
+}
 
-impl WowSrpTbcHeaderCrypto {
+/// Header crypto for TBC.
+///
+/// Created through `wow_srp_tbc_proof_seed_into_*_header_crypto`.
+///
+/// This object must manually be freed.
+pub struct WowSrpTBCHeaderCrypto(HeaderCryptoInner);
+
+impl WowSrpTBCHeaderCrypto {
     pub fn new(inner: HeaderCryptoInner) -> Self {
         Self(inner)
     }
 }
 
-#[no_mangle]
-pub extern "C" fn wow_srp_tbc_header_crypto_free(header: *mut WowSrpTbcHeaderCrypto) {
-    free_box_ptr(header)
-}
-
+/// Encrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_TBC_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 #[no_mangle]
 pub extern "C" fn wow_srp_tbc_header_crypto_encrypt(
-    header: *mut WowSrpTbcHeaderCrypto,
+    header: *mut WowSrpTBCHeaderCrypto,
     data: *mut u8,
     length: u16,
     out_error: *mut c_char,
@@ -141,9 +190,21 @@ pub extern "C" fn wow_srp_tbc_header_crypto_encrypt(
     header.0.encrypt(data);
 }
 
+/// Decrypts the `data`.
+///
+/// You must manually size the `data` to be the appropriate size.
+/// For messages sent from the client this is `WOW_SRP_CLIENT_HEADER_LENGTH`,
+/// and for messages sent from the server this is `WOW_SRP_TBC_SERVER_HEADER_LENGTH`.
+///
+/// * `data` is a `length` sized array that will be written to.
+/// * `out_error` is a pointer to a single `uint8_t` that will be written to.
+///
+/// This function can return a null pointer, in which case errors will be in `out_error`.
+/// It can return:
+/// * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
 #[no_mangle]
 pub extern "C" fn wow_srp_tbc_header_crypto_decrypt(
-    header: *mut WowSrpTbcHeaderCrypto,
+    header: *mut WowSrpTBCHeaderCrypto,
     data: *mut u8,
     length: u16,
     out_error: *mut c_char,
@@ -159,4 +220,12 @@ pub extern "C" fn wow_srp_tbc_header_crypto_decrypt(
     let data = unsafe { std::slice::from_raw_parts_mut(data, length.into()) };
 
     header.0.decrypt(data);
+}
+
+/// Free the `WowSrpTBCHeaderCrypto`.
+///
+/// This must manually be done.
+#[no_mangle]
+pub extern "C" fn wow_srp_tbc_header_crypto_free(header: *mut WowSrpTBCHeaderCrypto) {
+    free_box_ptr(header)
 }
