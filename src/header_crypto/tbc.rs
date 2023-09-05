@@ -5,26 +5,26 @@ use crate::util::{
 };
 use crate::WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH;
 use std::ffi::c_char;
-use wow_srp::vanilla_header::HeaderCrypto as HeaderCryptoInner;
-use wow_srp::vanilla_header::ProofSeed as ProofSeedInner;
+use wow_srp::tbc_header::HeaderCrypto as HeaderCryptoInner;
+use wow_srp::tbc_header::ProofSeed as ProofSeedInner;
 
-pub struct WowSrpVanillaProofSeed(ProofSeedInner);
+pub struct WowSrpTbcProofSeed(ProofSeedInner);
 
 #[no_mangle]
-pub extern "C" fn wow_srp_vanilla_proof_seed_free(seed: *mut WowSrpVanillaProofSeed) {
+pub extern "C" fn wow_srp_tbc_proof_seed_free(seed: *mut WowSrpTbcProofSeed) {
     free_box_ptr(seed)
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_vanilla_proof_seed_new() -> *mut WowSrpVanillaProofSeed {
-    let seed = Box::new(WowSrpVanillaProofSeed(ProofSeedInner::new()));
+pub extern "C" fn wow_srp_tbc_proof_seed_new() -> *mut WowSrpTbcProofSeed {
+    let seed = Box::new(WowSrpTbcProofSeed(ProofSeedInner::new()));
 
     Box::into_raw(seed)
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_vanilla_proof_seed(
-    seed: *const WowSrpVanillaProofSeed,
+pub extern "C" fn wow_srp_tbc_proof_seed(
+    seed: *const WowSrpTbcProofSeed,
     out_error: *mut c_char,
 ) -> u32 {
     let Some(seed) = is_null(seed, out_error) else {
@@ -35,14 +35,14 @@ pub extern "C" fn wow_srp_vanilla_proof_seed(
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_proof_seed_into_vanilla_client_header_crypto(
-    seed: *mut WowSrpVanillaProofSeed,
+pub extern "C" fn wow_srp_proof_seed_into_tbc_client_header_crypto(
+    seed: *mut WowSrpTbcProofSeed,
     username: *const c_char,
     session_key: *const u8,
     server_seed: u32,
     out_client_proof: *mut u8,
     out_error: *mut c_char,
-) -> *mut WowSrpVanillaHeaderCrypto {
+) -> *mut WowSrpTbcHeaderCrypto {
     let Some(seed) = retake_ownership(seed, out_error) else {
         return std::ptr::null_mut();
     };
@@ -62,20 +62,20 @@ pub extern "C" fn wow_srp_proof_seed_into_vanilla_client_header_crypto(
 
     write_array(out_client_proof, client_proof.as_slice());
 
-    let header_crypto = Box::new(WowSrpVanillaHeaderCrypto::new(header_crypto));
+    let header_crypto = Box::new(WowSrpTbcHeaderCrypto::new(header_crypto));
 
     Box::into_raw(header_crypto)
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_proof_seed_into_vanilla_server_header_crypto(
-    seed: *mut WowSrpVanillaProofSeed,
+pub extern "C" fn wow_srp_proof_seed_into_tbc_server_header_crypto(
+    seed: *mut WowSrpTbcProofSeed,
     username: *const c_char,
     session_key: *const u8,
     client_proof: *const u8,
     client_seed: u32,
     out_error: *mut c_char,
-) -> *mut WowSrpVanillaHeaderCrypto {
+) -> *mut WowSrpTbcHeaderCrypto {
     let Some(seed) = retake_ownership(seed, out_error) else {
         return std::ptr::null_mut();
     };
@@ -101,27 +101,27 @@ pub extern "C" fn wow_srp_proof_seed_into_vanilla_server_header_crypto(
         return std::ptr::null_mut();
     };
 
-    let header_crypto = Box::new(WowSrpVanillaHeaderCrypto::new(header));
+    let header_crypto = Box::new(WowSrpTbcHeaderCrypto::new(header));
 
     Box::into_raw(header_crypto)
 }
 
-pub struct WowSrpVanillaHeaderCrypto(HeaderCryptoInner);
+pub struct WowSrpTbcHeaderCrypto(HeaderCryptoInner);
 
-impl WowSrpVanillaHeaderCrypto {
+impl WowSrpTbcHeaderCrypto {
     pub fn new(inner: HeaderCryptoInner) -> Self {
         Self(inner)
     }
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_vanilla_header_crypto_free(header: *mut WowSrpVanillaHeaderCrypto) {
+pub extern "C" fn wow_srp_tbc_header_crypto_free(header: *mut WowSrpTbcHeaderCrypto) {
     free_box_ptr(header)
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_vanilla_header_crypto_encrypt(
-    header: *mut WowSrpVanillaHeaderCrypto,
+pub extern "C" fn wow_srp_tbc_header_crypto_encrypt(
+    header: *mut WowSrpTbcHeaderCrypto,
     data: *mut u8,
     length: u16,
     out_error: *mut c_char,
@@ -140,8 +140,8 @@ pub extern "C" fn wow_srp_vanilla_header_crypto_encrypt(
 }
 
 #[no_mangle]
-pub extern "C" fn wow_srp_vanilla_header_crypto_decrypt(
-    header: *mut WowSrpVanillaHeaderCrypto,
+pub extern "C" fn wow_srp_tbc_header_crypto_decrypt(
+    header: *mut WowSrpTbcHeaderCrypto,
     data: *mut u8,
     length: u16,
     out_error: *mut c_char,
