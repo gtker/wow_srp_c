@@ -1,19 +1,19 @@
-#[cfg(not(feature = "disable_client"))]
+#[cfg(feature = "client")]
 pub mod client;
 pub mod header_crypto;
-#[cfg(not(feature = "disable_server"))]
+#[cfg(feature = "server")]
 pub mod server;
 mod util;
 
-#[cfg(not(any(feature = "disable_client", feature = "disable_server")))]
+#[cfg(feature = "values")]
 pub use values::*;
 
-pub const CLIENT_HEADER_LENGTH: u8 = 6;
-
-#[cfg(not(any(feature = "disable_client", feature = "disable_server")))]
+#[cfg(feature = "values")]
 mod values {
     use std::ffi::c_char;
     use wow_srp::LARGE_SAFE_PRIME_LITTLE_ENDIAN;
+
+    pub const CLIENT_HEADER_LENGTH: u8 = 6;
 
     /// Length of the password verifier returned by `wow_srp_verifier_password_verifier` in bytes.
     ///

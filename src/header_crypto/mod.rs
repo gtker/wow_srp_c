@@ -1,6 +1,6 @@
-#[cfg(not(feature = "disable_tbc_header"))]
+#[cfg(feature = "tbc")]
 pub mod tbc;
-#[cfg(not(feature = "disable_vanilla_header"))]
+#[cfg(feature = "vanilla")]
 pub mod vanilla;
-#[cfg(not(feature = "disable_wrath_header"))]
+#[cfg(feature = "wrath")]
 pub mod wrath;

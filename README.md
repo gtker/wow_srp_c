@@ -17,17 +17,10 @@ You should only use one of these, and probably the C++ one unless you know what 
 
 ```cmake
 add_subdirectory(wow_srp_c)
-target_compile_definitions(wow_srp INTERFACE # Optional
-        #WOW_SRP_DISABLE_SERVER # Uncomment if you aren't writing a server
-        #WOW_SRP_DISABLE_CLIENT # Uncomment if you aren't writing a client
-        #WOW_SRP_DISABLE_VANILLA_HEADER # Uncomment if you don't use Vanilla (1.12)
-        #WOW_SRP_DISABLE_TBC_HEADER # Uncomment if you don't use TBC (2.4.3)
-        #WOW_SRP_DISABLE_WRATH_HEADER # Uncomment if you don't use Wrath (3.3.5)
-)
 target_link_libraries(YOUR_TARGET_HERE PRIVATE wow_srp::wow_srp)
 ```
 
-* Import either the `wow_srp/wow_srp.h` or `wow_srp/wow_srp.hpp` header file.
+* Import the `wow_srp/{client, server, wow_srp, wrath, tbc, vanilla}.h` headers file.
 
 ## Slow use for everybody else
 
@@ -38,24 +31,13 @@ By default, both static libraries (`.a`/`.lib`) and shared libraries (`.so`/`.dl
 * Add the `include/` folder to your include path.
 * Either add the `target/release` directory to your library path or copy the `target/release/wow_srp.(dll/so/a/lib)`
   files to your build directory.
-* Add the necessary defines to disable symbols in the headers.
-* Import either the `wow_srp/wow_srp.h` or `wow_srp/wow_srp.hpp` header file.
-
-## Defines
-
-| Define                           | Description                                                                                 |
-|----------------------------------|---------------------------------------------------------------------------------------------|
-| `WOW_SRP_DISABLE_SERVER`         | Disables types for the server part of authentication. Only used on authentication servers.  |
-| `WOW_SRP_DISABLE_CLIENT`         | Disables types for the client part of authentication. Only used for clients.                |
-| `WOW_SRP_DISABLE_VANILLA_HEADER` | Disables types for header encryption for Vanilla (1.12). Used by clients and world servers. | 
-| `WOW_SRP_DISABLE_TBC_HEADER`     | Disables types for header encryption for TBC (2.4.3). Used by clients and world servers.    | 
-| `WOW_SRP_DISABLE_WRATH_HEADER`   | Disables types for header encryption for Wrath (3.3.5). Used by clients and world servers.  | 
+* Import the relevant header files from `wow_srp/`.
 
 # Server Usage
 
 ## Authentication
 
-Ensure the `WOW_SRP_DISABLE_SERVER` define is not set.
+Import the `wow_srp/server.h` header file.
 
 The general flow is:
 
@@ -75,7 +57,7 @@ Temporarily save the session key for header decryption.
 
 # Client Usage
 
-Ensure the `WOW_SRP_DISABLE_CLIENT` define is not set.
+Import the `wow_srp/client.h` header file.
 
 The general flow is:
 
