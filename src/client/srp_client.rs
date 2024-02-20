@@ -5,11 +5,11 @@ use wow_srp::client::SrpClient as SrpClientInner;
 /// Final step of client side authentication.
 ///
 /// This must be manually freed with `wow_srp_client_free`.
-pub struct WowSrpClient(SrpClientInner, [u8; 40]);
+pub struct WowSrpClient(SrpClientInner);
 
 impl WowSrpClient {
     pub(crate) fn new(inner: SrpClientInner) -> Self {
-        Self(inner, [0_u8; 40])
+        Self(inner)
     }
 }
 
@@ -24,11 +24,7 @@ pub extern "C" fn wow_srp_client_session_key(client: *mut WowSrpClient) -> *cons
         return std::ptr::null();
     };
 
-    // TODO: New version of wow_srp removes this
-    let session_key = client.0.session_key();
-    client.1 = session_key;
-
-    &client.1 as *const u8
+    client.0.session_key().as_ptr()
 }
 
 /// Calculates the client proof for reconnection.

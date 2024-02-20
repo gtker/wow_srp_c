@@ -75,7 +75,7 @@ pub extern "C" fn wow_srp_proof_seed_into_wrath_client_crypto(
     let (client_proof, header_crypto) =
         (*seed)
             .0
-            .into_proof_and_header_crypto(&username, session_key, server_seed);
+            .into_client_header_crypto(&username, session_key, server_seed);
 
     write_array(out_client_proof, client_proof.as_slice());
 
@@ -124,7 +124,7 @@ pub extern "C" fn wow_srp_proof_seed_into_wrath_server_crypto(
     let Ok(header) =
         (*seed)
             .0
-            .into_header_crypto(&username, session_key, client_proof, client_seed)
+            .into_server_header_crypto(&username, session_key, client_proof, client_seed)
     else {
         write_error(out_error, WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH);
         return std::ptr::null_mut();

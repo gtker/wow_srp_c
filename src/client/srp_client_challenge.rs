@@ -6,7 +6,6 @@ use crate::util::{
 use crate::WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH;
 use std::ffi::c_char;
 use wow_srp::client::SrpClientChallenge as SrpClientChallengeInner;
-use wow_srp::client::SrpClientUser as SrpClientUserInner;
 
 /// First part of the client side authentication.
 ///
@@ -67,7 +66,9 @@ pub extern "C" fn wow_srp_client_challenge_create(
         return std::ptr::null_mut();
     };
 
-    let challenge = SrpClientUserInner::new(username, password).into_challenge(
+    let challenge = SrpClientChallengeInner::new(
+        username,
+        password,
         generator,
         large_safe_prime,
         server_public_key,
