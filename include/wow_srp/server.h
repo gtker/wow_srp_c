@@ -217,3 +217,4 @@ void wow_srp_verifier_free(struct WowSrpVerifier *verifier);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
+

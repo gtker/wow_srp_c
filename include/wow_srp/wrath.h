@@ -203,3 +203,4 @@ void wow_srp_wrath_client_crypto_free(struct WowSrpWrathClientCrypto *header);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
+

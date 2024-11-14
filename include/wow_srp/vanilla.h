@@ -146,3 +146,4 @@ void wow_srp_vanilla_header_crypto_free(struct WowSrpVanillaHeaderCrypto *header
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
+

@@ -136,3 +136,4 @@ void wow_srp_client_challenge_free(struct WowSrpClientChallenge *client_challeng
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
+
