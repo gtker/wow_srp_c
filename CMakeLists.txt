@@ -64,6 +64,7 @@ set_target_properties(wow_srp-static
 "
     )
     set(SHARED_LIBRARY_INIT "")
+    target_link_libraries(wow_srp INTERFACE $<$<PLATFORM_ID:Windows>:Bcrypt>)
     install(FILES $<TARGET_PROPERTY:wow_srp-static,IMPORTED_LOCATION> DESTINATION lib)
 endif ()
 
