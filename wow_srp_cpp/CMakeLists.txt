@@ -11,5 +11,7 @@ target_sources(wow_srp_cpp PUBLIC
 )
 add_library(WowSrp::wow_srp_cpp ALIAS wow_srp_cpp)
 
+target_compile_features(wow_srp_cpp PUBLIC cxx_std_17)
+
 target_link_libraries(wow_srp_cpp PRIVATE WowSrp::wow_srp)
 set_target_properties(wow_srp_cpp PROPERTIES INSTALL_RPATH $ORIGIN)
