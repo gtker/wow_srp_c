@@ -29,7 +29,7 @@ typedef struct WowSrpVerifier WowSrpVerifier;
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif /* __cplusplus */
 /**
  * Returns the server public key as a `WOW_SRP_KEY_LENGTH` sized array.
  *
@@ -215,6 +215,5 @@ void wow_srp_verifier_free(struct WowSrpVerifier *verifier);
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-
+} /* extern "C" */
+#endif /* __cplusplus */

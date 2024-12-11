@@ -25,7 +25,7 @@ typedef struct WowSrpTBCProofSeed WowSrpTBCProofSeed;
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif /* __cplusplus */
 /**
  * Creates a proof seed.
  *
@@ -144,6 +144,5 @@ void wow_srp_tbc_header_crypto_free(struct WowSrpTBCHeaderCrypto *header);
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-
+} /* extern "C" */
+#endif /* __cplusplus */

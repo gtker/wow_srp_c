@@ -33,7 +33,7 @@ typedef struct WowSrpWrathServerCrypto WowSrpWrathServerCrypto;
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif /* __cplusplus */
 /**
  * Creates a proof seed.
  *
@@ -201,6 +201,5 @@ void wow_srp_wrath_client_crypto_free(struct WowSrpWrathClientCrypto *header);
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-
+} /* extern "C" */
+#endif /* __cplusplus */

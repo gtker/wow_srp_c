@@ -95,4 +95,3 @@ using KeyArray = std::array<uint8_t, KEY_LENGTH>;
 using ReconnectDataArray = std::array<uint8_t, RECONNECT_DATA_LENGTH>;
 
 } // namespace wow_srp
-

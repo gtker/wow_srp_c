@@ -37,6 +37,9 @@ def split_includes(output: str) -> dict[str, list[str]]:
     current_file: typing.Optional[str] = None
 
     for line in output.splitlines():
+        # C89 compatibility of headers
+        line = line.replace('// extern "C"', '/* extern "C" */')
+        line = line.replace('// __cplusplus', '/* __cplusplus */')
         if "#include" in line:
             continue
         elif line.strip() == "":

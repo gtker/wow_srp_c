@@ -25,7 +25,7 @@ typedef struct WowSrpVanillaProofSeed WowSrpVanillaProofSeed;
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif /* __cplusplus */
 /**
  * Creates a proof seed.
  *
@@ -144,6 +144,5 @@ void wow_srp_vanilla_header_crypto_free(struct WowSrpVanillaHeaderCrypto *header
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-
+} /* extern "C" */
+#endif /* __cplusplus */

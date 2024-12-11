@@ -20,7 +20,7 @@ typedef struct WowSrpClientChallenge WowSrpClientChallenge;
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif /* __cplusplus */
 /**
  * Returns the session key as a `WOW_SRP_SESSION_KEY_LENGTH` sized array.
  *
@@ -134,6 +134,5 @@ void wow_srp_client_challenge_free(struct WowSrpClientChallenge *client_challeng
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-
+} /* extern "C" */
+#endif /* __cplusplus */
