@@ -66,6 +66,7 @@ def split_includes(output: str) -> dict[str, list[str]]:
 def write_files(files: dict[str, list[str]]):
     for file, content in files.items():
         content = '\n'.join(content)
+        content += '\n'
         filename = f"{file}.h"
         with open(INCLUDE_DIR / filename, "w") as f:
             f.write(content)
