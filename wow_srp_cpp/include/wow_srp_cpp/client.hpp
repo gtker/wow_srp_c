@@ -1,9 +1,12 @@
 #pragma once
 #include "wow_srp_cpp/wow_srp.hpp"
+
 #include <array>
 #include <cstdint>
 #include <string>
 #include <memory>
+
+#include "wow_srp_cpp_export.h"
 
 struct WowSrpClientChallenge;
 struct WowSrpClient;
@@ -13,25 +16,25 @@ class Client;
 
 class ClientChallenge {
 public:
-  ClientChallenge(const std::string &username, const std::string &password,
+  WOW_SRP_CPP_EXPORT ClientChallenge(const std::string &username, const std::string &password,
                   uint8_t generator,
                   KeyArray large_safe_prime,
                   KeyArray server_public_key,
                   KeyArray salt);
 
-  ClientChallenge(const ClientChallenge &) = delete;
-  ClientChallenge(ClientChallenge &&) = default;
+  WOW_SRP_CPP_EXPORT ClientChallenge(const ClientChallenge &) = delete;
+  WOW_SRP_CPP_EXPORT ClientChallenge(ClientChallenge &&) = default;
 
-  ClientChallenge &operator=(const ClientChallenge &) = delete;
-  ClientChallenge &operator=(ClientChallenge &&) = default;
+  WOW_SRP_CPP_EXPORT ClientChallenge &operator=(const ClientChallenge &) = delete;
+  WOW_SRP_CPP_EXPORT ClientChallenge &operator=(ClientChallenge &&) = default;
 
-  ~ClientChallenge() = default;
+  WOW_SRP_CPP_EXPORT ~ClientChallenge() = default;
 
-  Client verify_server_proof(ProofArray server_proof);
+  WOW_SRP_CPP_EXPORT Client verify_server_proof(ProofArray server_proof);
 
-  [[nodiscard]] const KeyArray &
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const KeyArray &
   client_public_key() const noexcept;
-  [[nodiscard]] const ProofArray &
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const ProofArray &
   client_proof() const noexcept;
 
 private:
@@ -43,19 +46,19 @@ private:
 class Client {
 public:
   Client() = delete;
-  ~Client() = default;
+  WOW_SRP_CPP_EXPORT ~Client() = default;
   Client(const Client&) = delete;
-  Client(Client&&) = default;
+  WOW_SRP_CPP_EXPORT Client(Client&&) = default;
 
   Client &operator=(const Client&) = delete;
-  Client& operator=(Client&&) = default;
+  WOW_SRP_CPP_EXPORT Client& operator=(Client&&) = default;
 
-  [[nodiscard]] const SessionKeyArray& session_key() const noexcept;
-  [[nodiscard]] std::pair<ReconnectDataArray, ProofArray> calculate_reconnect_values(ReconnectDataArray server_challenge_data);
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const SessionKeyArray& session_key() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT std::pair<ReconnectDataArray, ProofArray> calculate_reconnect_values(ReconnectDataArray server_challenge_data);
 
 private:
   friend ClientChallenge;
-  Client(WowSrpClient* inner, SessionKeyArray session_key);
+  WOW_SRP_CPP_EXPORT Client(WowSrpClient* inner, SessionKeyArray session_key);
 
   std::unique_ptr<WowSrpClient, void(*)(WowSrpClient*)> m_inner;
   SessionKeyArray m_session_key;

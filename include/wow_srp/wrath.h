@@ -39,7 +39,7 @@ extern "C" {
  *
  * Can not be null.
  */
-struct WowSrpWrathProofSeed *wow_srp_wrath_proof_seed_new(void);
+WOW_SRP_EXPORT struct WowSrpWrathProofSeed *wow_srp_wrath_proof_seed_new(void);
 
 
 /**
@@ -47,7 +47,9 @@ struct WowSrpWrathProofSeed *wow_srp_wrath_proof_seed_new(void);
  *
  * Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
  */
-uint32_t wow_srp_wrath_proof_seed(const struct WowSrpWrathProofSeed *seed, char *out_error);
+WOW_SRP_EXPORT
+uint32_t wow_srp_wrath_proof_seed(const struct WowSrpWrathProofSeed *seed,
+                                  char *out_error);
 
 
 /**
@@ -64,6 +66,7 @@ uint32_t wow_srp_wrath_proof_seed(const struct WowSrpWrathProofSeed *seed, char 
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpWrathClientCrypto *wow_srp_proof_seed_into_wrath_client_crypto(struct WowSrpWrathProofSeed *seed,
                                                                             const char *username,
                                                                             const uint8_t *session_key,
@@ -86,6 +89,7 @@ struct WowSrpWrathClientCrypto *wow_srp_proof_seed_into_wrath_client_crypto(stru
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpWrathServerCrypto *wow_srp_proof_seed_into_wrath_server_crypto(struct WowSrpWrathProofSeed *seed,
                                                                             const char *username,
                                                                             const uint8_t *session_key,
@@ -99,7 +103,7 @@ struct WowSrpWrathServerCrypto *wow_srp_proof_seed_into_wrath_server_crypto(stru
  *
  * Created through `wow_srp_wrath_proof_seed_new`.
  */
-void wow_srp_wrath_proof_seed_free(struct WowSrpWrathProofSeed *seed);
+WOW_SRP_EXPORT void wow_srp_wrath_proof_seed_free(struct WowSrpWrathProofSeed *seed);
 
 
 /**
@@ -118,6 +122,7 @@ void wow_srp_wrath_proof_seed_free(struct WowSrpWrathProofSeed *seed);
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_wrath_server_crypto_encrypt(struct WowSrpWrathServerCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -137,6 +142,7 @@ void wow_srp_wrath_server_crypto_encrypt(struct WowSrpWrathServerCrypto *header,
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_wrath_server_crypto_decrypt(struct WowSrpWrathServerCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -148,7 +154,7 @@ void wow_srp_wrath_server_crypto_decrypt(struct WowSrpWrathServerCrypto *header,
  *
  * This must manually be done.
  */
-void wow_srp_wrath_server_crypto_free(struct WowSrpWrathServerCrypto *header);
+WOW_SRP_EXPORT void wow_srp_wrath_server_crypto_free(struct WowSrpWrathServerCrypto *header);
 
 
 /**
@@ -164,6 +170,7 @@ void wow_srp_wrath_server_crypto_free(struct WowSrpWrathServerCrypto *header);
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_wrath_client_crypto_encrypt(struct WowSrpWrathClientCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -186,6 +193,7 @@ void wow_srp_wrath_client_crypto_encrypt(struct WowSrpWrathClientCrypto *header,
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_wrath_client_crypto_decrypt(struct WowSrpWrathClientCrypto *header,
                                          uint8_t *data,
                                          uint16_t length,
@@ -197,9 +205,9 @@ void wow_srp_wrath_client_crypto_decrypt(struct WowSrpWrathClientCrypto *header,
  *
  * This must manually be done.
  */
-void wow_srp_wrath_client_crypto_free(struct WowSrpWrathClientCrypto *header);
+WOW_SRP_EXPORT void wow_srp_wrath_client_crypto_free(struct WowSrpWrathClientCrypto *header);
 
 
 #ifdef __cplusplus
-} /* extern "C" */
-#endif /* __cplusplus */
+}  /* extern "C" */
+#endif  /* __cplusplus */

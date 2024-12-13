@@ -31,7 +31,7 @@ extern "C" {
  *
  * Can not be null.
  */
-struct WowSrpTBCProofSeed *wow_srp_tbc_proof_seed_new(void);
+WOW_SRP_EXPORT struct WowSrpTBCProofSeed *wow_srp_tbc_proof_seed_new(void);
 
 
 /**
@@ -39,7 +39,9 @@ struct WowSrpTBCProofSeed *wow_srp_tbc_proof_seed_new(void);
  *
  * Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
  */
-uint32_t wow_srp_tbc_proof_seed(const struct WowSrpTBCProofSeed *seed, char *out_error);
+WOW_SRP_EXPORT
+uint32_t wow_srp_tbc_proof_seed(const struct WowSrpTBCProofSeed *seed,
+                                char *out_error);
 
 
 /**
@@ -56,6 +58,7 @@ uint32_t wow_srp_tbc_proof_seed(const struct WowSrpTBCProofSeed *seed, char *out
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpTBCHeaderCrypto *wow_srp_tbc_proof_seed_into_client_header_crypto(struct WowSrpTBCProofSeed *seed,
                                                                                const char *username,
                                                                                const uint8_t *session_key,
@@ -78,6 +81,7 @@ struct WowSrpTBCHeaderCrypto *wow_srp_tbc_proof_seed_into_client_header_crypto(s
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpTBCHeaderCrypto *wow_srp_tbc_proof_seed_into_server_header_crypto(struct WowSrpTBCProofSeed *seed,
                                                                                const char *username,
                                                                                const uint8_t *session_key,
@@ -92,7 +96,7 @@ struct WowSrpTBCHeaderCrypto *wow_srp_tbc_proof_seed_into_server_header_crypto(s
  * This should not normally be called since `wow_srp_tbc_proof_seed_into_tbc_*` functions
  * free this object.
  */
-void wow_srp_tbc_proof_seed_free(struct WowSrpTBCProofSeed *seed);
+WOW_SRP_EXPORT void wow_srp_tbc_proof_seed_free(struct WowSrpTBCProofSeed *seed);
 
 
 /**
@@ -109,6 +113,7 @@ void wow_srp_tbc_proof_seed_free(struct WowSrpTBCProofSeed *seed);
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_tbc_header_crypto_encrypt(struct WowSrpTBCHeaderCrypto *header,
                                        uint8_t *data,
                                        uint16_t length,
@@ -129,6 +134,7 @@ void wow_srp_tbc_header_crypto_encrypt(struct WowSrpTBCHeaderCrypto *header,
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_tbc_header_crypto_decrypt(struct WowSrpTBCHeaderCrypto *header,
                                        uint8_t *data,
                                        uint16_t length,
@@ -140,9 +146,9 @@ void wow_srp_tbc_header_crypto_decrypt(struct WowSrpTBCHeaderCrypto *header,
  *
  * This must manually be done.
  */
-void wow_srp_tbc_header_crypto_free(struct WowSrpTBCHeaderCrypto *header);
+WOW_SRP_EXPORT void wow_srp_tbc_header_crypto_free(struct WowSrpTBCHeaderCrypto *header);
 
 
 #ifdef __cplusplus
-} /* extern "C" */
-#endif /* __cplusplus */
+}  /* extern "C" */
+#endif  /* __cplusplus */

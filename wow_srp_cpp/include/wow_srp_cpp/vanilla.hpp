@@ -6,6 +6,8 @@
 #include <utility>
 #include <memory>
 
+#include "wow_srp_cpp_export.h"
+
 struct WowSrpVanillaProofSeed;
 struct WowSrpVanillaHeaderCrypto;
 
@@ -16,42 +18,42 @@ class VanillaProofSeed;
 class VanillaHeaderCrypto {
 public:
   VanillaHeaderCrypto() = delete;
-  ~VanillaHeaderCrypto() = default;
+  WOW_SRP_CPP_EXPORT ~VanillaHeaderCrypto() = default;
 
   VanillaHeaderCrypto(const VanillaHeaderCrypto &) = delete;
-  VanillaHeaderCrypto(VanillaHeaderCrypto &&) = default;
+  WOW_SRP_CPP_EXPORT VanillaHeaderCrypto(VanillaHeaderCrypto &&) = default;
 
   VanillaHeaderCrypto &operator=(const VanillaHeaderCrypto &) = delete;
-  VanillaHeaderCrypto &operator=(VanillaHeaderCrypto &&) = default;
+  WOW_SRP_CPP_EXPORT VanillaHeaderCrypto &operator=(VanillaHeaderCrypto &&) = default;
 
-  void encrypt(uint8_t *data, uint16_t length);
-  void decrypt(uint8_t *data, uint16_t length);
+  WOW_SRP_CPP_EXPORT void encrypt(uint8_t *data, uint16_t length);
+  WOW_SRP_CPP_EXPORT void decrypt(uint8_t *data, uint16_t length);
 
 private:
   friend VanillaProofSeed;
-  explicit VanillaHeaderCrypto(WowSrpVanillaHeaderCrypto *inner) noexcept;
+  WOW_SRP_CPP_EXPORT explicit VanillaHeaderCrypto(WowSrpVanillaHeaderCrypto *inner) noexcept;
 
   std::unique_ptr<WowSrpVanillaHeaderCrypto, void(*)(WowSrpVanillaHeaderCrypto*)> m_inner;
 };
 
 class VanillaProofSeed {
 public:
-  VanillaProofSeed() noexcept;
-  ~VanillaProofSeed() noexcept = default;
+  WOW_SRP_CPP_EXPORT VanillaProofSeed() noexcept;
+  WOW_SRP_CPP_EXPORT ~VanillaProofSeed() noexcept = default;
 
   VanillaProofSeed(const VanillaProofSeed &) = delete;
-  VanillaProofSeed(VanillaProofSeed &&) = default;
+  WOW_SRP_CPP_EXPORT VanillaProofSeed(VanillaProofSeed &&) = default;
 
   VanillaProofSeed &operator=(const VanillaProofSeed &) = delete;
-  VanillaProofSeed &operator=(VanillaProofSeed &&) = default;
+  WOW_SRP_CPP_EXPORT VanillaProofSeed &operator=(VanillaProofSeed &&) = default;
 
-  [[nodiscard]] uint32_t proof_seed() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT uint32_t proof_seed() const noexcept;
 
-  std::pair<VanillaHeaderCrypto, ProofArray> into_client_header_crypto(
+  WOW_SRP_CPP_EXPORT std::pair<VanillaHeaderCrypto, ProofArray> into_client_header_crypto(
       const std::string &username,
       SessionKeyArray &session_key, uint32_t server_seed);
 
-  VanillaHeaderCrypto into_server_header_crypto(
+  WOW_SRP_CPP_EXPORT VanillaHeaderCrypto into_server_header_crypto(
       const std::string &username,
       const SessionKeyArray &session_key,
       const ProofArray &client_proof, uint32_t client_seed);

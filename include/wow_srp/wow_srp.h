@@ -82,7 +82,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+/**
+ * Large safe prime used by the server implementation.
+ *
+ * This should be passed to the client through `CMD_AUTH_LOGON_CHALLENGE_Server`.
+ */
 extern const uint8_t WOW_SRP_LARGE_SAFE_PRIME_LITTLE_ENDIAN[32];
+
+
 #ifdef __cplusplus
-} /* extern "C" */
-#endif /* __cplusplus */
+}  /* extern "C" */
+#endif  /* __cplusplus */

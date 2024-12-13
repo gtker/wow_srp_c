@@ -1,3 +1,6 @@
+[fn]
+prefix = "WOW_SRP_EXPORT"
+
 [defines]
 "feature = values" = "WOW_SRP_VALUES"
 "feature = wrath" = "WOW_SRP_WRATH"

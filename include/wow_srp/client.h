@@ -28,7 +28,7 @@ extern "C" {
  *
  * Will return null if `proof` is null.
  */
-const uint8_t *wow_srp_client_session_key(struct WowSrpClient *client);
+WOW_SRP_EXPORT const uint8_t *wow_srp_client_session_key(struct WowSrpClient *client);
 
 
 /**
@@ -45,6 +45,7 @@ const uint8_t *wow_srp_client_session_key(struct WowSrpClient *client);
  * * `WOW_SRP_ERROR_INVALID_PUBLIC_KEY` if the public key is invalid.
  * * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
  */
+WOW_SRP_EXPORT
 void wow_srp_client_calculate_reconnect_values(struct WowSrpClient *client,
                                                const uint8_t *server_challenge_data,
                                                uint8_t *out_client_challenge_data,
@@ -55,7 +56,7 @@ void wow_srp_client_calculate_reconnect_values(struct WowSrpClient *client,
 /**
  * Frees a `WowSrpClient`.
  */
-void wow_srp_client_free(struct WowSrpClient *client);
+WOW_SRP_EXPORT void wow_srp_client_free(struct WowSrpClient *client);
 
 
 /**
@@ -78,6 +79,7 @@ void wow_srp_client_free(struct WowSrpClient *client);
  * * `WOW_SRP_ERROR_INVALID_PUBLIC_KEY` if the public key is invalid.
  * * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
  */
+WOW_SRP_EXPORT
 struct WowSrpClientChallenge *wow_srp_client_challenge_create(const char *username,
                                                               const char *password,
                                                               uint8_t generator,
@@ -94,6 +96,7 @@ struct WowSrpClientChallenge *wow_srp_client_challenge_create(const char *userna
  *
  * Will return null if `proof` is null.
  */
+WOW_SRP_EXPORT
 const uint8_t *wow_srp_client_challenge_client_proof(struct WowSrpClientChallenge *client_challenge);
 
 
@@ -104,6 +107,7 @@ const uint8_t *wow_srp_client_challenge_client_proof(struct WowSrpClientChalleng
  *
  * Will return null if `proof` is null.
  */
+WOW_SRP_EXPORT
 const uint8_t *wow_srp_client_challenge_client_public_key(struct WowSrpClientChallenge *client_challenge);
 
 
@@ -119,6 +123,7 @@ const uint8_t *wow_srp_client_challenge_client_public_key(struct WowSrpClientCha
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  * * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
  */
+WOW_SRP_EXPORT
 struct WowSrpClient *wow_srp_client_challenge_verify_server_proof(struct WowSrpClientChallenge *client_challenge,
                                                                   const uint8_t *server_proof,
                                                                   char *out_error);
@@ -130,9 +135,9 @@ struct WowSrpClient *wow_srp_client_challenge_verify_server_proof(struct WowSrpC
  * This should not normally need to be called since `wow_srp_proof_into_server` will
  * free the proof.
  */
-void wow_srp_client_challenge_free(struct WowSrpClientChallenge *client_challenge);
+WOW_SRP_EXPORT void wow_srp_client_challenge_free(struct WowSrpClientChallenge *client_challenge);
 
 
 #ifdef __cplusplus
-} /* extern "C" */
-#endif /* __cplusplus */
+}  /* extern "C" */
+#endif  /* __cplusplus */

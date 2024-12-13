@@ -31,7 +31,7 @@ extern "C" {
  *
  * Can not be null.
  */
-struct WowSrpVanillaProofSeed *wow_srp_vanilla_proof_seed_new(void);
+WOW_SRP_EXPORT struct WowSrpVanillaProofSeed *wow_srp_vanilla_proof_seed_new(void);
 
 
 /**
@@ -39,7 +39,9 @@ struct WowSrpVanillaProofSeed *wow_srp_vanilla_proof_seed_new(void);
  *
  * Used in `CMD_AUTH_RECONNECT_CHALLENGE_Server`.
  */
-uint32_t wow_srp_vanilla_proof_seed(const struct WowSrpVanillaProofSeed *seed, char *out_error);
+WOW_SRP_EXPORT
+uint32_t wow_srp_vanilla_proof_seed(const struct WowSrpVanillaProofSeed *seed,
+                                    char *out_error);
 
 
 /**
@@ -56,6 +58,7 @@ uint32_t wow_srp_vanilla_proof_seed(const struct WowSrpVanillaProofSeed *seed, c
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpVanillaHeaderCrypto *wow_srp_vanilla_proof_seed_into_client_header_crypto(struct WowSrpVanillaProofSeed *seed,
                                                                                        const char *username,
                                                                                        const uint8_t *session_key,
@@ -78,6 +81,7 @@ struct WowSrpVanillaHeaderCrypto *wow_srp_vanilla_proof_seed_into_client_header_
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpVanillaHeaderCrypto *wow_srp_vanilla_proof_seed_into_server_header_crypto(struct WowSrpVanillaProofSeed *seed,
                                                                                        const char *username,
                                                                                        const uint8_t *session_key,
@@ -92,7 +96,7 @@ struct WowSrpVanillaHeaderCrypto *wow_srp_vanilla_proof_seed_into_server_header_
  * This should not normally be called since `wow_srp_vanilla_proof_seed_into_vanilla_*` functions
  * free this object.
  */
-void wow_srp_vanilla_proof_seed_free(struct WowSrpVanillaProofSeed *seed);
+WOW_SRP_EXPORT void wow_srp_vanilla_proof_seed_free(struct WowSrpVanillaProofSeed *seed);
 
 
 /**
@@ -109,6 +113,7 @@ void wow_srp_vanilla_proof_seed_free(struct WowSrpVanillaProofSeed *seed);
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_vanilla_header_crypto_encrypt(struct WowSrpVanillaHeaderCrypto *header,
                                            uint8_t *data,
                                            uint16_t length,
@@ -129,6 +134,7 @@ void wow_srp_vanilla_header_crypto_encrypt(struct WowSrpVanillaHeaderCrypto *hea
  * It can return:
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  */
+WOW_SRP_EXPORT
 void wow_srp_vanilla_header_crypto_decrypt(struct WowSrpVanillaHeaderCrypto *header,
                                            uint8_t *data,
                                            uint16_t length,
@@ -140,9 +146,9 @@ void wow_srp_vanilla_header_crypto_decrypt(struct WowSrpVanillaHeaderCrypto *hea
  *
  * This must manually be done.
  */
-void wow_srp_vanilla_header_crypto_free(struct WowSrpVanillaHeaderCrypto *header);
+WOW_SRP_EXPORT void wow_srp_vanilla_header_crypto_free(struct WowSrpVanillaHeaderCrypto *header);
 
 
 #ifdef __cplusplus
-} /* extern "C" */
-#endif /* __cplusplus */
+}  /* extern "C" */
+#endif  /* __cplusplus */

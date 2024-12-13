@@ -16,7 +16,7 @@
 namespace wow_srp {
 // Verifier
 
-Verifier::Verifier(std::string &&username, const KeyArray &password_verifier,
+WOW_SRP_CPP_EXPORT Verifier::Verifier(std::string &&username, const KeyArray &password_verifier,
                    const KeyArray &salt)
     : m_username(username), m_salt{salt}, m_verifier{password_verifier},
       m_inner(nullptr, wow_srp_verifier_free) {
@@ -30,7 +30,7 @@ Verifier::Verifier(std::string &&username, const KeyArray &password_verifier,
   }
 }
 
-Verifier Verifier::from_username_and_password(std::string &&username,
+WOW_SRP_CPP_EXPORT Verifier Verifier::from_username_and_password(std::string &&username,
                                               const std::string &password) {
   char out_error = WOW_SRP_SUCCESS;
   auto verifier = wow_srp_verifier_from_username_and_password(
@@ -50,7 +50,7 @@ Verifier Verifier::from_username_and_password(std::string &&username,
   return {std::move(username), password_verifier, salt};
 }
 
-Proof Verifier::into_proof() noexcept {
+WOW_SRP_CPP_EXPORT Proof Verifier::into_proof() noexcept {
   auto proof = wow_srp_verifier_into_proof(m_inner.release());
 
   auto public_key = wow_srp_proof_server_public_key(proof);
@@ -60,24 +60,24 @@ Proof Verifier::into_proof() noexcept {
   return Proof{proof, m_salt, server_public_key};
 }
 
-const KeyArray &Verifier::salt() const noexcept { return m_salt; }
+WOW_SRP_CPP_EXPORT const KeyArray &Verifier::salt() const noexcept { return m_salt; }
 
-const KeyArray &Verifier::verifier() const noexcept { return m_verifier; }
+WOW_SRP_CPP_EXPORT const KeyArray &Verifier::verifier() const noexcept { return m_verifier; }
 
 // Proof
 
-Proof::Proof(WowSrpProof *inner, KeyArray salt,
+WOW_SRP_CPP_EXPORT Proof::Proof(WowSrpProof *inner, KeyArray salt,
              KeyArray server_public_key) noexcept
     : m_inner{inner, wow_srp_proof_free}, m_salt(salt),
       m_server_public_key(server_public_key) {}
 
-const KeyArray &Proof::salt() const noexcept { return m_salt; }
+WOW_SRP_CPP_EXPORT const KeyArray &Proof::salt() const noexcept { return m_salt; }
 
-const KeyArray &Proof::server_public_key() const noexcept {
+WOW_SRP_CPP_EXPORT const KeyArray &Proof::server_public_key() const noexcept {
   return m_server_public_key;
 }
 
-Server Proof::into_server(const KeyArray &client_public_key,
+WOW_SRP_CPP_EXPORT Server Proof::into_server(const KeyArray &client_public_key,
                           const ProofArray &client_proof) {
   ProofArray out_server_proof{};
   char out_error{wow_srp::SUCCESS};
@@ -102,25 +102,25 @@ Server Proof::into_server(const KeyArray &client_public_key,
   return {server, out_server_proof, session_key, reconnect_data};
 }
 
-Server::Server(WowSrpServer *inner, ProofArray server_proof,
+WOW_SRP_CPP_EXPORT Server::Server(WowSrpServer *inner, ProofArray server_proof,
                SessionKeyArray session_key,
                ReconnectDataArray reconnect_data) noexcept
     : m_inner{inner, wow_srp_server_free}, m_server_proof(server_proof),
       m_session_key(session_key), m_reconnect_data(reconnect_data) {}
 
-[[nodiscard]] const ProofArray &Server::server_proof() const noexcept {
+[[nodiscard]] WOW_SRP_CPP_EXPORT const ProofArray &Server::server_proof() const noexcept {
   return m_server_proof;
 }
 
-[[nodiscard]] const SessionKeyArray &Server::session_key() const noexcept {
+[[nodiscard]] WOW_SRP_CPP_EXPORT const SessionKeyArray &Server::session_key() const noexcept {
   return m_session_key;
 }
 
-[[nodiscard]] const ReconnectDataArray &
+[[nodiscard]] WOW_SRP_CPP_EXPORT const ReconnectDataArray &
 Server::reconnect_data() const noexcept {
   return m_reconnect_data;
 }
-bool Server::verify_reconnection_attempt(const ReconnectDataArray &client_data,
+WOW_SRP_CPP_EXPORT bool Server::verify_reconnection_attempt(const ReconnectDataArray &client_data,
                                          const ProofArray &client_proof) {
   char out_error = wow_srp::SUCCESS;
   const auto success = wow_srp_server_verify_reconnection_attempt(
@@ -138,7 +138,7 @@ bool Server::verify_reconnection_attempt(const ReconnectDataArray &client_data,
 // Client
 namespace wow_srp {
 
-ClientChallenge::ClientChallenge(const std::string &username,
+WOW_SRP_CPP_EXPORT ClientChallenge::ClientChallenge(const std::string &username,
                                  const std::string &password, uint8_t generator,
                                  KeyArray large_safe_prime,
                                  KeyArray server_public_key, KeyArray salt)
@@ -162,15 +162,15 @@ ClientChallenge::ClientChallenge(const std::string &username,
   std::copy_n(proof, m_client_proof.size(), m_client_proof.begin());
 }
 
-const KeyArray &ClientChallenge::client_public_key() const noexcept {
+WOW_SRP_CPP_EXPORT const KeyArray &ClientChallenge::client_public_key() const noexcept {
   return m_client_public_key;
 }
 
-const ProofArray &ClientChallenge::client_proof() const noexcept {
+WOW_SRP_CPP_EXPORT const ProofArray &ClientChallenge::client_proof() const noexcept {
   return m_client_proof;
 }
 
-Client ClientChallenge::verify_server_proof(ProofArray server_proof) {
+WOW_SRP_CPP_EXPORT Client ClientChallenge::verify_server_proof(ProofArray server_proof) {
   char out_error{wow_srp::SUCCESS};
   auto client = wow_srp_client_challenge_verify_server_proof(
       m_inner.get(), server_proof.data(), &out_error);
@@ -189,14 +189,14 @@ Client ClientChallenge::verify_server_proof(ProofArray server_proof) {
 
 // Client
 
-Client::Client(WowSrpClient *inner, SessionKeyArray session_key)
+WOW_SRP_CPP_EXPORT Client::Client(WowSrpClient *inner, SessionKeyArray session_key)
     : m_inner{inner, wow_srp_client_free}, m_session_key(session_key) {}
 
-const SessionKeyArray &Client::session_key() const noexcept {
+WOW_SRP_CPP_EXPORT const SessionKeyArray &Client::session_key() const noexcept {
   return m_session_key;
 }
 
-std::pair<ReconnectDataArray, ProofArray>
+WOW_SRP_CPP_EXPORT std::pair<ReconnectDataArray, ProofArray>
 Client::calculate_reconnect_values(ReconnectDataArray server_challenge_data) {
   ReconnectDataArray out_client_challenge_data{};
   ProofArray out_client_proof{};
@@ -218,14 +218,14 @@ Client::calculate_reconnect_values(ReconnectDataArray server_challenge_data) {
 
 // Vanilla
 namespace wow_srp {
-VanillaProofSeed::VanillaProofSeed() noexcept
+WOW_SRP_CPP_EXPORT VanillaProofSeed::VanillaProofSeed() noexcept
     : m_inner{wow_srp_vanilla_proof_seed_new(),
               wow_srp_vanilla_proof_seed_free},
       m_seed(wow_srp_vanilla_proof_seed(m_inner.get(), nullptr)) {}
 
-uint32_t VanillaProofSeed::proof_seed() const noexcept { return m_seed; }
+WOW_SRP_CPP_EXPORT uint32_t VanillaProofSeed::proof_seed() const noexcept { return m_seed; }
 
-std::pair<VanillaHeaderCrypto, ProofArray>
+WOW_SRP_CPP_EXPORT std::pair<VanillaHeaderCrypto, ProofArray>
 VanillaProofSeed::into_client_header_crypto(const std::string &username,
                                             SessionKeyArray &session_key,
                                             uint32_t server_seed) {
@@ -245,7 +245,7 @@ VanillaProofSeed::into_client_header_crypto(const std::string &username,
   return std::make_pair(VanillaHeaderCrypto(header_crypto), out_client_proof);
 }
 
-VanillaHeaderCrypto VanillaProofSeed::into_server_header_crypto(
+WOW_SRP_CPP_EXPORT VanillaHeaderCrypto VanillaProofSeed::into_server_header_crypto(
     const std::string &username, const SessionKeyArray &session_key,
     const ProofArray &client_proof, uint32_t client_seed) {
 
@@ -262,11 +262,11 @@ VanillaHeaderCrypto VanillaProofSeed::into_server_header_crypto(
   return VanillaHeaderCrypto(header_crypto);
 }
 
-VanillaHeaderCrypto::VanillaHeaderCrypto(
+WOW_SRP_CPP_EXPORT VanillaHeaderCrypto::VanillaHeaderCrypto(
     WowSrpVanillaHeaderCrypto *inner) noexcept
     : m_inner{inner, wow_srp_vanilla_header_crypto_free} {}
 
-void VanillaHeaderCrypto::encrypt(uint8_t *data, uint16_t length) {
+WOW_SRP_CPP_EXPORT void VanillaHeaderCrypto::encrypt(uint8_t *data, uint16_t length) {
   char out_error = wow_srp::SUCCESS;
   wow_srp_vanilla_header_crypto_encrypt(m_inner.get(), data, length,
                                         &out_error);
@@ -276,7 +276,7 @@ void VanillaHeaderCrypto::encrypt(uint8_t *data, uint16_t length) {
   }
 }
 
-void VanillaHeaderCrypto::decrypt(uint8_t *data, uint16_t length) {
+WOW_SRP_CPP_EXPORT void VanillaHeaderCrypto::decrypt(uint8_t *data, uint16_t length) {
   char out_error = wow_srp::SUCCESS;
   wow_srp_vanilla_header_crypto_decrypt(m_inner.get(), data, length,
                                         &out_error);

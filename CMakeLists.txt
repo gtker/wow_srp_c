@@ -14,7 +14,7 @@ corrosion_import_crate(MANIFEST_PATH Cargo.toml)
 target_sources(wow_srp
         INTERFACE
         FILE_SET HEADERS
-        BASE_DIRS include
+        BASE_DIRS include ${CMAKE_CURRENT_BINARY_DIR}
         FILES
         include/wow_srp/client.h
         include/wow_srp/server.h
@@ -22,6 +22,7 @@ target_sources(wow_srp
         include/wow_srp/tbc.h
         include/wow_srp/wrath.h
         include/wow_srp/wow_srp.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wow_srp_export.h
 )
 add_library(WowSrp::wow_srp ALIAS wow_srp)
 
@@ -38,6 +39,18 @@ write_basic_package_version_file(
         VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
         COMPATIBILITY AnyNewerVersion
 )
+
+if(BUILD_SHARED_LIBS)
+    if(WIN32 OR CYGWIN)
+        set(WOW_SRP_DEFINE_IMPORT "__declspec(dllimport)")
+    elseif(GNUCC)
+        set(WOW_SRP_DEFINE_IMPORT "__attribute__((visibility(\"default\")))")
+    endif()
+else()
+    set(WOW_SRP_DEFINE_IMPORT "")
+endif()
+
+target_compile_definitions(wow_srp INTERFACE "WOW_SRP_EXPORT=${WOW_SRP_DEFINE_IMPORT}")
 
 if (BUILD_SHARED_LIBS)
     # Export the actual shared library

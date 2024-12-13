@@ -6,6 +6,8 @@
 
 #include "wow_srp_cpp/wow_srp.hpp"
 
+#include "wow_srp_cpp_export.h"
+
 struct WowSrpVerifier;
 struct WowSrpProof;
 struct WowSrpServer;
@@ -16,25 +18,25 @@ class Server;
 
 class Verifier {
 public:
-  Verifier(std::string &&username, const KeyArray &password_verifier,
+  WOW_SRP_CPP_EXPORT Verifier(std::string &&username, const KeyArray &password_verifier,
            const KeyArray &salt);
 
-  Verifier(const Verifier &) = delete;
-  Verifier(Verifier &&) = default;
+  WOW_SRP_CPP_EXPORT Verifier(const Verifier &) = delete;
+  WOW_SRP_CPP_EXPORT Verifier(Verifier &&) = default;
 
-  Verifier &operator=(const Verifier &) = delete;
-  Verifier &operator=(Verifier &&) = default;
+  WOW_SRP_CPP_EXPORT Verifier &operator=(const Verifier &) = delete;
+  WOW_SRP_CPP_EXPORT Verifier &operator=(Verifier &&) = default;
 
-  ~Verifier() = default;
+  WOW_SRP_CPP_EXPORT ~Verifier() = default;
 
-  static Verifier from_username_and_password(std::string &&username,
+  WOW_SRP_CPP_EXPORT static Verifier from_username_and_password(std::string &&username,
                                              const std::string &password);
 
-  [[nodiscard]] Proof into_proof() noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT Proof into_proof() noexcept;
 
-  [[nodiscard]] const KeyArray &salt() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const KeyArray &salt() const noexcept;
 
-  [[nodiscard]] const KeyArray &verifier() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const KeyArray &verifier() const noexcept;
 
 private:
   std::string m_username;
@@ -47,22 +49,22 @@ class Proof {
 public:
   Proof() = delete;
   Proof(const Proof &) = delete;
-  Proof(Proof &&) = default;
+  WOW_SRP_CPP_EXPORT Proof(Proof &&) = default;
 
   Proof &operator=(const Proof &) = delete;
-  Proof &operator=(Proof &&) = default;
+  WOW_SRP_CPP_EXPORT Proof &operator=(Proof &&) = default;
 
-  ~Proof() = default;
+  WOW_SRP_CPP_EXPORT ~Proof() = default;
 
-  [[nodiscard]] const KeyArray &salt() const noexcept;
-  [[nodiscard]] const KeyArray &server_public_key() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const KeyArray &salt() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const KeyArray &server_public_key() const noexcept;
 
-  Server into_server(const KeyArray &client_public_key,
+  WOW_SRP_CPP_EXPORT Server into_server(const KeyArray &client_public_key,
                      const ProofArray &client_proof);
 
 private:
   friend Verifier;
-  Proof(WowSrpProof *inner, KeyArray salt, KeyArray server_public_key) noexcept;
+  WOW_SRP_CPP_EXPORT Proof(WowSrpProof *inner, KeyArray salt, KeyArray server_public_key) noexcept;
 
   std::unique_ptr<WowSrpProof, void (*)(WowSrpProof *)> m_inner;
   KeyArray m_salt;
@@ -73,24 +75,24 @@ class Server {
 public:
   Server() = delete;
   Server(const Server &) = delete;
-  Server(Server &&) = default;
+  WOW_SRP_CPP_EXPORT Server(Server &&) = default;
 
   Server &operator=(const Server &) = delete;
-  Server &operator=(Server &&) = default;
+  WOW_SRP_CPP_EXPORT Server &operator=(Server &&) = default;
 
-  ~Server() = default;
+  WOW_SRP_CPP_EXPORT ~Server() = default;
 
-  [[nodiscard]] bool
+  [[nodiscard]] WOW_SRP_CPP_EXPORT bool
   verify_reconnection_attempt(const ReconnectDataArray &client_data,
                               const ProofArray &client_proof);
 
-  [[nodiscard]] const ProofArray &server_proof() const noexcept;
-  [[nodiscard]] const SessionKeyArray &session_key() const noexcept;
-  [[nodiscard]] const ReconnectDataArray &reconnect_data() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const ProofArray &server_proof() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const SessionKeyArray &session_key() const noexcept;
+  [[nodiscard]] WOW_SRP_CPP_EXPORT const ReconnectDataArray &reconnect_data() const noexcept;
 
 private:
   friend Proof;
-  Server(WowSrpServer *inner, ProofArray server_proof,
+  WOW_SRP_CPP_EXPORT Server(WowSrpServer *inner, ProofArray server_proof,
          SessionKeyArray session_key,
          ReconnectDataArray reconnect_data) noexcept;
 

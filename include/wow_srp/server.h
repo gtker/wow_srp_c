@@ -37,7 +37,7 @@ extern "C" {
  *
  * Will return null if `proof` is null.
  */
-const uint8_t *wow_srp_proof_server_public_key(const struct WowSrpProof *proof);
+WOW_SRP_EXPORT const uint8_t *wow_srp_proof_server_public_key(const struct WowSrpProof *proof);
 
 
 /**
@@ -47,7 +47,7 @@ const uint8_t *wow_srp_proof_server_public_key(const struct WowSrpProof *proof);
  *
  * Will return null if `proof` is null.
  */
-const uint8_t *wow_srp_proof_salt(const struct WowSrpProof *proof);
+WOW_SRP_EXPORT const uint8_t *wow_srp_proof_salt(const struct WowSrpProof *proof);
 
 
 /**
@@ -67,6 +67,7 @@ const uint8_t *wow_srp_proof_salt(const struct WowSrpProof *proof);
  * * `WOW_SRP_ERROR_INVALID_PUBLIC_KEY` if the public key is invalid.
  * * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
  */
+WOW_SRP_EXPORT
 struct WowSrpServer *wow_srp_proof_into_server(struct WowSrpProof *proof,
                                                const uint8_t *client_public_key,
                                                const uint8_t *client_proof,
@@ -80,7 +81,7 @@ struct WowSrpServer *wow_srp_proof_into_server(struct WowSrpProof *proof,
  * This should not normally need to be called since `wow_srp_proof_into_server` will
  * free the proof.
  */
-void wow_srp_proof_free(struct WowSrpProof *proof);
+WOW_SRP_EXPORT void wow_srp_proof_free(struct WowSrpProof *proof);
 
 
 /**
@@ -90,7 +91,7 @@ void wow_srp_proof_free(struct WowSrpProof *proof);
  *
  * Will return null if `proof` is null.
  */
-const uint8_t *wow_srp_server_session_key(const struct WowSrpServer *server);
+WOW_SRP_EXPORT const uint8_t *wow_srp_server_session_key(const struct WowSrpServer *server);
 
 
 /**
@@ -100,6 +101,7 @@ const uint8_t *wow_srp_server_session_key(const struct WowSrpServer *server);
  *
  * Will return null if `proof` is null.
  */
+WOW_SRP_EXPORT
 const uint8_t *wow_srp_server_reconnect_challenge_data(const struct WowSrpServer *server);
 
 
@@ -115,6 +117,7 @@ const uint8_t *wow_srp_server_reconnect_challenge_data(const struct WowSrpServer
  * * `WOW_SRP_ERROR_NULL_POINTER` if any pointer is null.
  * * `WOW_SRP_ERROR_PROOFS_DO_NOT_MATCH` if the client proof does not match the server proof.
  */
+WOW_SRP_EXPORT
 bool wow_srp_server_verify_reconnection_attempt(struct WowSrpServer *server,
                                                 const uint8_t *client_data,
                                                 const uint8_t *client_proof,
@@ -126,7 +129,7 @@ bool wow_srp_server_verify_reconnection_attempt(struct WowSrpServer *server,
  *
  * This must be called manually since no other function will free it.
  */
-void wow_srp_server_free(struct WowSrpServer *server);
+WOW_SRP_EXPORT void wow_srp_server_free(struct WowSrpServer *server);
 
 
 /**
@@ -145,6 +148,7 @@ void wow_srp_server_free(struct WowSrpServer *server);
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpVerifier *wow_srp_verifier_from_username_and_password(const char *username,
                                                                    const char *password,
                                                                    char *out_error);
@@ -165,6 +169,7 @@ struct WowSrpVerifier *wow_srp_verifier_from_username_and_password(const char *u
  * * `WOW_SRP_ERROR_UTF8` if the username/password contains disallowed characters.
  * * `WOW_SRP_ERROR_CHARACTERS_NOT_ALLOWED_IN_NAME` if the username/password contains disallowed characters.
  */
+WOW_SRP_EXPORT
 struct WowSrpVerifier *wow_srp_verifier_from_database_values(const char *username,
                                                              const uint8_t *password_verifier,
                                                              const uint8_t *salt,
@@ -178,7 +183,7 @@ struct WowSrpVerifier *wow_srp_verifier_from_database_values(const char *usernam
  *
  * Will return null if `verifier` is null.
  */
-struct WowSrpProof *wow_srp_verifier_into_proof(struct WowSrpVerifier *verifier);
+WOW_SRP_EXPORT struct WowSrpProof *wow_srp_verifier_into_proof(struct WowSrpVerifier *verifier);
 
 
 /**
@@ -190,7 +195,7 @@ struct WowSrpProof *wow_srp_verifier_into_proof(struct WowSrpVerifier *verifier)
  *
  * Will return null if `verifier` is null.
  */
-const uint8_t *wow_srp_verifier_salt(const struct WowSrpVerifier *verifier);
+WOW_SRP_EXPORT const uint8_t *wow_srp_verifier_salt(const struct WowSrpVerifier *verifier);
 
 
 /**
@@ -202,6 +207,7 @@ const uint8_t *wow_srp_verifier_salt(const struct WowSrpVerifier *verifier);
  *
  * Will return null if `verifier` is null.
  */
+WOW_SRP_EXPORT
 const uint8_t *wow_srp_verifier_password_verifier(const struct WowSrpVerifier *verifier);
 
 
@@ -211,9 +217,9 @@ const uint8_t *wow_srp_verifier_password_verifier(const struct WowSrpVerifier *v
  * This should not normally need to be called since `wow_srp_verifier_into_proof` will
  * free the verifier.
  */
-void wow_srp_verifier_free(struct WowSrpVerifier *verifier);
+WOW_SRP_EXPORT void wow_srp_verifier_free(struct WowSrpVerifier *verifier);
 
 
 #ifdef __cplusplus
-} /* extern "C" */
-#endif /* __cplusplus */
+}  /* extern "C" */
+#endif  /* __cplusplus */
