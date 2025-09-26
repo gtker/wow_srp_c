@@ -19,12 +19,14 @@ You should only use one of these, and probably the C++ one unless you know what 
 add_subdirectory(wow_srp_c)
 
 # For C API
-target_link_libraries(YOUR_TARGET_HERE PRIVATE wow_srp::wow_srp)
+target_link_libraries(YOUR_TARGET_HERE PRIVATE WowSrp::wow_srp)
 # For C++ API
-target_link_libraries(YOUR_TARGET_HERE PRIVATE wow_srp_cpp::wow_srp_cpp)
+target_link_libraries(YOUR_TARGET_HERE PRIVATE WowSrp::wow_srp_cpp)
 ```
 
-* Import the `wow_srp/{client, server, wow_srp, wrath, tbc, vanilla}.h` headers file.
+* Include the headers:
+   * C: `wow_srp/{client, server, wow_srp, wrath, tbc, vanilla}.h`
+   * C++: `wow_srp_cpp/{client, server, wow_srp, wrath, tbc, vanilla}.hpp`
 
 ## Slow use for everybody else
 
@@ -70,7 +72,7 @@ The general flow is:
 WowSrpClientChallenge -> WowSrpClient
 ```
 
-Create a `WowSrpClienChallenge` through `wow_srp_client_challenge` with your username/password and the values received from
+Create a `WowSrpClientChallenge` through `wow_srp_client_challenge` with your username/password and the values received from
 [CMD_AUTH_LOGON_CHALLENGE_Server](https://gtker.com/wow_messages/docs/cmd_auth_logon_challenge_server.html).
 Send the `client_public_key` and `client_proof` to the server with `wow_srp_client_challenge_client_public_key`
 and `wow_srp_client_challenge_client_proof`.
